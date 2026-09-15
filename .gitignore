@@ -1,3 +1,22 @@
+# IDEs
+.idea/
+.vscode/
+
+# IntelliJ / Android Studio
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Environment files (if you ever use them)
+.env
+.env.*
+
 # Miscellaneous
 *.class
 *.lock
