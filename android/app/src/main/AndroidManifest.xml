@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Location (geolocator) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- geolocator requires INTERNET on some devices to resolve providers -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="trip_track"
         android:name="${applicationName}"
