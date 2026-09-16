@@ -8,11 +8,14 @@ import '../services/location_tracking_service.dart';
 import '../services/trip_service.dart';
 import '../utils/format.dart';
 import '../widgets/info_row.dart';
+import '../widgets/route_list.dart';
 import '../widgets/trip_summary_dialog.dart';
 
 /// Main screen with the Fahrtenbuch workflow:
 /// enter driver + start KM -> Start Trip -> (GPS points are collected in
-/// the background) -> Stop Trip (enter end KM) -> trip summary.
+/// the background, distance is calculated from them) -> Stop Trip ->
+/// trip summary. The user does not need to enter an end KM; the distance
+/// is derived from the recorded GPS positions.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -110,22 +113,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  /// Stops the trip: asks for the end KM, then asks for a manual end
-  /// location when GPS is not available, and shows the trip summary.
+  /// Stops the trip: asks for a manual end location when GPS is not
+  /// available, and shows the trip summary. The distance is calculated
+  /// from the recorded GPS points — no end KM input is needed.
   Future<void> _onStopTrip() async {
     final Trip? trip = _tripService.currentTrip;
     if (trip == null) return;
 
-    final double? endKm = await _promptEndKm(startKm: trip.startKm);
-    if (endKm == null) return; // user cancelled -> trip stays active
-
-    if (endKm < trip.startKm) {
-      _showSnack('End KM must not be smaller than start KM.');
-      return;
-    }
-
     setState(() => _busy = true);
-    final Trip finished = await _tripService.stopTrip(endKm);
+    final Trip finished = await _tripService.stopTrip();
 
     if (finished.endLatitude == null) {
       final String? manual = await _promptLocation(
@@ -201,45 +197,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
       return (result == null || result.isEmpty) ? null : result;
-    } finally {
-      controller.dispose();
-    }
-  }
-
-  /// Asks for the end odometer reading. Returns null if cancelled.
-  Future<double?> _promptEndKm({required double startKm}) async {
-    final TextEditingController controller = TextEditingController(
-      text: startKm.truncateToDouble().toString(),
-    );
-    try {
-      final String? raw = await showDialog<String>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Stop Trip'),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              labelText: 'End Kilometerstand',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  Navigator.of(context).pop(controller.text),
-              child: const Text('Stop'),
-            ),
-          ],
-        ),
-      );
-      return double.tryParse(raw ?? '');
     } finally {
       controller.dispose();
     }
@@ -352,23 +309,26 @@ class _HomeScreenState extends State<HomeScreen> {
               value: formatKmValue(trip.startKm),
             ),
             InfoRow(
-              label: 'End KM',
-              value:
-                  trip.endKm != null ? formatKmValue(trip.endKm!) : '—',
-            ),
-            InfoRow(
-              label: 'Distance',
-              value: trip.isFinished ? formatKm(trip.distanceKm) : '—',
+              label: 'Distance (GPS)',
+              value: formatKm(trip.distanceKm),
             ),
             InfoRow(
               label: 'Intermediate Points',
-              value: isActive ? '$_storedPointCount' : '${trip.intermediatePointCount}',
+              value:
+                  isActive ? '$_storedPointCount' : '${trip.intermediatePointCount}',
             ),
             InfoRow(
               label: 'Duration',
               value:
                   trip.isFinished ? formatDuration(trip.duration) : '—',
             ),
+            const SizedBox(height: 16),
+            const Text(
+              'Route (recorded GPS points)',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            RouteList(trip: trip),
           ],
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/trip.dart';
 import '../utils/format.dart';
 import 'info_row.dart';
+import 'route_list.dart';
 
 /// Shows the finished trip as a Fahrtenbuch entry.
 class TripSummaryDialog extends StatelessWidget {
@@ -42,13 +43,19 @@ class TripSummaryDialog extends StatelessWidget {
               InfoRow(label: 'Start Location', value: trip.startLocationText ?? '—'),
               InfoRow(label: 'End Location', value: trip.endLocationText ?? '—'),
               InfoRow(label: 'Start KM', value: formatKmValue(trip.startKm)),
-              InfoRow(label: 'End KM', value: formatKmValue(trip.endKm ?? trip.startKm)),
-              InfoRow(label: 'Distance', value: formatKm(trip.distanceKm)),
+              InfoRow(label: 'Distance (GPS)', value: formatKm(trip.distanceKm)),
               InfoRow(
                 label: 'Intermediate Points',
                 value: '${trip.intermediatePointCount}',
               ),
               InfoRow(label: 'Duration', value: formatDuration(trip.duration)),
+              const SizedBox(height: 8),
+              const Text(
+                'Route (recorded GPS points)',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              RouteList(trip: trip),
             ],
           ),
         ),

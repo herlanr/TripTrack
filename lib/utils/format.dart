@@ -9,6 +9,12 @@ String formatDateTime(DateTime dateTime) {
       '${two(dateTime.hour)}:${two(dateTime.minute)}';
 }
 
+/// Formats a time of day as "14:00".
+String formatTime(DateTime dateTime) {
+  String two(int value) => value.toString().padLeft(2, '0');
+  return '${two(dateTime.hour)}:${two(dateTime.minute)}';
+}
+
 /// Formats a duration as "1h", "1h 05min" or "42min".
 String formatDuration(Duration duration) {
   if (duration.inMinutes < 1) {

@@ -14,8 +14,8 @@ import '../models/location_point.dart';
 /// `geolocator` directly, which makes it easy to swap the source of truth
 /// later (e.g. a backend or a mock) without changing the screens.
 ///
-/// GPS here is for **location documentation only** — the official trip
-/// distance always comes from the odometer (see [TripService]).
+/// The recorded points are the basis for both the trip distance
+/// (Haversine, see [TripService]) and future route visualization.
 class LocationTrackingService {
   StreamSubscription<Position>? _subscription;
   StreamController<LocationPoint>? _controller;

@@ -8,8 +8,9 @@ import 'location_tracking_service.dart';
 /// Owns the Fahrtenbuch workflow: starting a trip, collecting GPS points
 /// during the trip, and stopping it.
 ///
-/// The official trip distance is always `End KM - Start KM` (odometer).
-/// GPS is only used to document locations.
+/// The trip distance is calculated from the recorded GPS points —
+/// the user does not enter an end odometer reading. The start odometer
+/// reading is stored for documentation only.
 class TripService {
   TripService(this._locationService);
 
@@ -17,8 +18,9 @@ class TripService {
 
   /// While a trip is active, at most one point is stored per
   /// [minPointInterval]. A simple time filter keeps the stored list small
-  /// ("avoid excessive storage") without any distance math.
-  static const Duration minPointInterval = Duration(minutes: 2);
+  /// ("avoid excessive storage") without any distance math: a 1-hour trip
+  /// stores at most 12 points.
+  static const Duration minPointInterval = Duration(minutes: 5);
 
   /// Safety cap so the list can never grow without limit.
   static const int maxPoints = 500;
@@ -40,6 +42,9 @@ class TripService {
           : TripPhase.active;
 
   /// Live updates of how many points were stored so far (for the UI).
+  /// The GPS distance is a pure function of the stored points, so it
+  /// changes at exactly the same moments — the UI simply re-reads
+  /// [Trip.distanceKm] after each update.
   Stream<int> get pointCountUpdates => _pointCountController.stream;
 
   /// Starts a new trip.
@@ -82,16 +87,15 @@ class TripService {
 
   /// Stops the current trip.
   ///
-  /// Saves the end time and end kilometerstand, tries to get a GPS fix for
-  /// the end location, and stops collecting points. If no fix is available,
-  /// the UI offers a manual input (see [setManualEndLocation]).
-  Future<Trip> stopTrip(double endKm) async {
+  /// Saves the end time, tries to get a GPS fix for the end location, and
+  /// stops collecting points. If no fix is available, the UI offers a
+  /// manual input (see [setManualEndLocation]).
+  Future<Trip> stopTrip() async {
     final trip = _trip;
     if (trip == null || trip.isFinished) {
       throw StateError('No active trip to stop.');
     }
 
-    trip.endKm = endKm;
     trip.endTime = DateTime.now();
 
     final LocationPoint? endFix =
@@ -135,7 +139,7 @@ class TripService {
   }
 
   /// Stores a GPS fix only if enough time has passed since the last stored
-  /// point. This way a 1-hour trip stores about 30 points instead of
+  /// point. This way a 1-hour trip stores about 12 points instead of
   /// thousands.
   void _onLiveFix(LocationPoint point) {
     final trip = _trip;

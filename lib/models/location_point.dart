@@ -1,8 +1,8 @@
 /// A single GPS fix.
 ///
-/// GPS data is used for **location documentation only** (start location,
-/// end location, intermediate points). The official trip distance is
-/// always calculated from the odometer, never from GPS.
+/// GPS data is used for the trip distance (sum of the Haversine segments
+/// between the recorded points) and for location documentation
+/// (start location, end location, intermediate points).
 class LocationPoint {
   const LocationPoint({
     required this.latitude,
