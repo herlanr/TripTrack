@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home_screen.dart';
+import 'screens/welcome_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +13,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fahrtenbuch PoC',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-      ),
-      home: const HomeScreen(),
+      title: 'TripTrack - Fahrtenbuch',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const WelcomeScreen(),
     );
   }
 }

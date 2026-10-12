@@ -4,100 +4,119 @@ import 'package:geolocator/geolocator.dart';
 
 import '../models/location_point.dart';
 
-/// Thin wrapper around the geolocator plugin.
-///
-/// Responsibilities:
-///  * One-shot permission check + GPS fix (start/end location capture).
-///  * Continuous position streaming while a trip is active.
-///
-/// Keeping all plugin calls in one place means the UI never touches
-/// `geolocator` directly, which makes it easy to swap the source of truth
-/// later (e.g. a backend or a mock) without changing the screens.
-///
-/// The recorded points are the basis for both the trip distance
-/// (Haversine, see [TripService]) and future route visualization.
+/// Result status of location permission and service checks.
+enum LocationPermissionResult {
+  granted,
+  denied,
+  deniedForever,
+  serviceDisabled,
+}
+
+/// Wraps the geolocator plugin to provide:
+/// 1. Location permission checks and user advice status.
+/// 2. Fast, non-blocking GPS fix retrieval (with timeout + last-known fallback).
+/// 3. Continuous position streaming during an active trip.
 class LocationTrackingService {
   StreamSubscription<Position>? _subscription;
   StreamController<LocationPoint>? _controller;
 
+  /// Latest GPS fix received during active stream or manual check.
+  LocationPoint? lastKnownPoint;
+
   bool get isTracking => _subscription != null;
 
-  /// Broadcast stream of live GPS fixes while tracking.
-  /// Empty when not tracking.
   Stream<LocationPoint> get liveUpdates {
     final controller = _controller;
     return controller != null ? controller.stream : const Stream.empty();
   }
 
-  /// Checks the location permission (requesting it when denied) and then
-  /// returns a single GPS fix. Returns `null` if the permission was refused
-  /// or no fix could be obtained.
-  Future<LocationPoint?> requestFixWithPermission() async {
+  /// Checks location service status and permission level.
+  Future<LocationPermissionResult> checkPermissionStatus() async {
     if (!await Geolocator.isLocationServiceEnabled()) {
-      return null;
+      return LocationPermissionResult.serviceDisabled;
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      return null;
+
+    if (permission == LocationPermission.denied) {
+      return LocationPermissionResult.denied;
+    }
+    if (permission == LocationPermission.deniedForever) {
+      return LocationPermissionResult.deniedForever;
     }
 
+    return LocationPermissionResult.granted;
+  }
+
+  /// Opens app settings on the device.
+  Future<void> openAppSettings() async {
+    await Geolocator.openAppSettings();
+  }
+
+  /// Opens system location settings on the device.
+  Future<void> openLocationSettings() async {
+    await Geolocator.openLocationSettings();
+  }
+
+  /// Checks location permissions and returns a fast GPS fix if granted.
+  Future<LocationPoint?> requestFixWithPermission() async {
+    final status = await checkPermissionStatus();
+    if (status != LocationPermissionResult.granted) {
+      return lastKnownPoint;
+    }
     return getCurrentPosition();
   }
 
-  /// Requests a single GPS fix.
+  /// Retrieves current position with a 2-second timeout, falling back to
+  /// `getLastKnownPosition` or `lastKnownPoint` so the app NEVER hangs.
   Future<LocationPoint?> getCurrentPosition() async {
-    final Position position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-      ),
-    );
-    return _toPoint(position);
+    try {
+      final Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 2),
+        ),
+      );
+      final point = _toPoint(position);
+      if (point != null) lastKnownPoint = point;
+      return point;
+    } catch (_) {
+      // Timeout or fix unavailable: fall back to last known cached position
+      final Position? last = await Geolocator.getLastKnownPosition();
+      final point = _toPoint(last) ?? lastKnownPoint;
+      if (point != null) lastKnownPoint = point;
+      return point;
+    }
   }
 
-  /// Starts continuous GPS tracking. Safe to call again: if a session is
-  /// already active, its subscription and controller are cancelled and
-  /// replaced **synchronously**, so [isTracking] and [liveUpdates] are
-  /// consistent immediately after this call returns.
-  ///
-  /// (The previous version awaited the old session's teardown here, which
-  /// rescheduled it to run *after* the new session was created and silently
-  /// nulled the new subscription out — the trip UI stayed "stopped".)
+  /// Starts live GPS tracking stream.
   Stream<LocationPoint> startTracking() {
     if (isTracking) {
-      _subscription?.cancel();
-      _subscription = null;
-      _controller?.close();
-      _controller = null;
+      stop();
     }
 
     _controller = StreamController<LocationPoint>.broadcast();
     _subscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        // We are not doing route visualization yet; a small distance
-        // filter keeps the stream from flooding us with noise.
         distanceFilter: 5,
       ),
     ).listen((position) {
       final LocationPoint? point = _toPoint(position);
       if (point != null) {
+        lastKnownPoint = point;
         _controller?.add(point);
       }
-    }, onError: (Object error) {
-      // Surface stream errors as a dead session instead of a silent hang.
+    }, onError: (_) {
       stop();
     });
 
     return liveUpdates;
   }
 
-  /// Stops continuous tracking and releases the subscription. Safe to call
-  /// when not tracking.
   Future<void> stop() async {
     await _subscription?.cancel();
     _subscription = null;
@@ -105,8 +124,6 @@ class LocationTrackingService {
     _controller = null;
   }
 
-  /// Stops tracking and releases everything. Call when the owning
-  /// service/screen is disposed.
   void dispose() {
     _subscription?.cancel();
     _subscription = null;

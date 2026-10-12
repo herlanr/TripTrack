@@ -1,15 +1,13 @@
 import '../utils/geo.dart';
 import 'location_point.dart';
 
-/// One vehicle trip (a Fahrtenbuch entry).
-///
-/// The trip distance is calculated from the recorded GPS points
-/// (Haversine, see [distanceKm]) — the user does not have to enter an
-/// end odometer reading. The odometer reading at start is still stored
-/// for documentation, but it is not used for the distance.
+/// Represents a single completed or active vehicle trip (Fahrtenbuch entry).
 class Trip {
   Trip({
+    String? id,
     required this.driverName,
+    this.driverId,
+    this.vehicleId,
     required this.startKm,
     required this.startTime,
     this.startLatitude,
@@ -20,36 +18,36 @@ class Trip {
     this.endLongitude,
     this.endLocationText,
     this.routePoints = const [],
-  });
+  }) : id = id ?? DateTime.now().millisecondsSinceEpoch.toString();
 
+  final String id;
   final String driverName;
+  final String? driverId; // Personen_ID (FK)
+  final String? vehicleId; // Fahrzeug_ID (FK)
   final DateTime startTime;
 
-  /// Odometer reading at the start (manually entered, documentation only).
+  /// Odometer reading at start
   final double startKm;
 
-  /// GPS coordinates at the start, if a fix was available.
+  /// GPS coordinates at start
   final double? startLatitude;
   final double? startLongitude;
 
-  /// Free-text start location: either "GPS (lat, lon)" or a manually
-  /// entered name when no GPS fix was available.
+  /// Resolved street address for start
   String? startLocationText;
 
-  // Filled in when the trip is stopped.
+  // Filled in when the trip is stopped
   DateTime? endTime;
   double? endLatitude;
   double? endLongitude;
   String? endLocationText;
 
-  /// GPS points collected during the trip (roughly one every 5 minutes).
+  /// GPS points collected during driving (recorded every 3 minutes)
   final List<LocationPoint> routePoints;
 
   bool get isFinished => endTime != null;
 
-  /// Distance in km, summed over the recorded GPS points (Haversine):
-  /// start point -> intermediate points -> end point. Returns 0 when
-  /// fewer than two GPS positions were recorded (e.g. no GPS at all).
+  /// Total distance in km calculated via Haversine sum over all GPS route points
   double get distanceKm {
     final List<LocationPoint> points = allGpsPoints();
     if (points.length < 2) return 0;
@@ -65,17 +63,9 @@ class Trip {
     return total;
   }
 
-  /// Distance below which two consecutive points are considered the same
-  /// position (GPS jitter / car not moved yet) and the second one is
-  /// dropped from the route.
-  static const double _minRouteSegmentKm = 0.01; // 10 m
+  static const double _minRouteSegmentKm = 0.01; // 10 meters threshold
 
-  /// All recorded GPS positions in chronological order: start point,
-  /// intermediate points, end point. This is the answer to "which way
-  /// did I drive" and the basis for future route visualization.
-  ///
-  /// Consecutive points closer than [_minRouteSegmentKm] are skipped, so
-  /// the route never shows the same position twice.
+  /// Returns all recorded GPS positions in chronological order
   List<LocationPoint> allGpsPoints() {
     final List<LocationPoint> points = [];
 
@@ -120,14 +110,51 @@ class Trip {
     return points;
   }
 
-  /// Trip duration, from start time to end time (zero while running).
+  /// Trip duration
   Duration get duration {
     final end = endTime;
     if (end == null) return Duration.zero;
     return end.difference(startTime);
   }
 
-  /// Number of intermediate points (start and end locations are not
-  /// counted as intermediate).
   int get intermediatePointCount => routePoints.length;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'driverName': driverName,
+        'driverId': driverId,
+        'vehicleId': vehicleId,
+        'startKm': startKm,
+        'startTime': startTime.toIso8601String(),
+        'startLatitude': startLatitude,
+        'startLongitude': startLongitude,
+        'startLocationText': startLocationText,
+        'endTime': endTime?.toIso8601String(),
+        'endLatitude': endLatitude,
+        'endLongitude': endLongitude,
+        'endLocationText': endLocationText,
+        'routePoints': routePoints.map((p) => p.toJson()).toList(),
+      };
+
+  factory Trip.fromJson(Map<String, dynamic> json) => Trip(
+        id: json['id'] as String?,
+        driverName: json['driverName'] as String,
+        driverId: json['driverId'] as String?,
+        vehicleId: json['vehicleId'] as String?,
+        startKm: (json['startKm'] as num).toDouble(),
+        startTime: DateTime.parse(json['startTime'] as String),
+        startLatitude: (json['startLatitude'] as num?)?.toDouble(),
+        startLongitude: (json['startLongitude'] as num?)?.toDouble(),
+        startLocationText: json['startLocationText'] as String?,
+        endTime: json['endTime'] != null
+            ? DateTime.parse(json['endTime'] as String)
+            : null,
+        endLatitude: (json['endLatitude'] as num?)?.toDouble(),
+        endLongitude: (json['endLongitude'] as num?)?.toDouble(),
+        endLocationText: json['endLocationText'] as String?,
+        routePoints: (json['routePoints'] as List<dynamic>?)
+                ?.map((e) => LocationPoint.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            const [],
+      );
 }
