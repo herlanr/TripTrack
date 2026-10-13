@@ -4,8 +4,9 @@ import '../models/driver.dart';
 import '../models/vehicle.dart';
 import '../services/vehicle_repository.dart';
 import '../theme/app_theme.dart';
-import '../utils/format.dart';
 import '../widgets/add_vehicle_dialog.dart';
+import '../widgets/profile_header.dart';
+import '../widgets/vehicle_list_card.dart';
 import 'welcome_screen.dart';
 
 /// User profile and settings screen for the logged-in driver.
@@ -58,7 +59,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await _loadVehicles();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fahrzeug "${newVehicle.displayName}" hinzugefügt.')),
+          SnackBar(
+            content: Text('Fahrzeug "${newVehicle.displayName}" hinzugefügt.'),
+          ),
         );
       }
     }
@@ -68,11 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const WelcomeScreen()),
     );
-  }
-
-  String _formatDate(DateTime dt) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(dt.day)}.${two(dt.month)}.${dt.year}';
   }
 
   @override
@@ -93,42 +91,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Center(
-            child: Column(
-              children: [
-                const CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Color(0xFFE8F5E9),
-                  child: Icon(
-                    Icons.person_rounded,
-                    size: 48,
-                    color: Color(0xFF2E7D32),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  driver?.fullName ?? 'Fahrer Profil',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (driver != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    'Geburtsdatum: ${_formatDate(driver.dateOfBirth)}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
+          // Driver Avatar Header Component
+          ProfileHeader(driver: driver),
+
           const SizedBox(height: 24),
 
-          // Vehicles section
+          // Vehicles Section Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -148,48 +116,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 8),
 
-          if (_loading)
-            const Center(child: CircularProgressIndicator())
-          else if (_vehicles.isEmpty)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    const Icon(Icons.directions_car_outlined, color: Colors.grey),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Keine Fahrzeuge vorhanden.',
-                        style: TextStyle(color: Colors.grey.shade700),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: _onAddVehiclePressed,
-                      child: const Text('Hinzufügen'),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            Card(
-              child: Column(
-                children: [
-                  for (int i = 0; i < _vehicles.length; i++) ...[
-                    ListTile(
-                      leading: const Icon(Icons.directions_car_rounded, color: AppTheme.primaryGreen),
-                      title: Text(
-                        _vehicles[i].displayName,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text('Kilometerstand: ${formatKm(_vehicles[i].currentKm)}'),
-                    ),
-                    if (i < _vehicles.length - 1) const Divider(height: 1),
-                  ],
-                ],
-              ),
-            ),
+          // Vehicle List Component
+          VehicleListCard(
+            vehicles: _vehicles,
+            loading: _loading,
+            onAddVehiclePressed: _onAddVehiclePressed,
+          ),
 
           const SizedBox(height: 24),
 

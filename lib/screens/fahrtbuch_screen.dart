@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/driver.dart';
 import '../models/trip.dart';
 import '../theme/app_theme.dart';
-import '../utils/format.dart';
 import '../widgets/export_dialog.dart';
-import '../widgets/trip_summary_dialog.dart';
+import '../widgets/trip_card.dart';
 
 /// Screen displaying the history of all completed Fahrtenbuch entries.
 /// Redesigned matching the wireframe sketch:
@@ -172,7 +171,10 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
                         itemCount: trips.length,
                         itemBuilder: (context, index) {
                           final trip = trips[index];
-                          return _buildTripCard(trip);
+                          return TripCard(
+                            trip: trip,
+                            onDeleteTrip: widget.onDeleteTrip,
+                          );
                         },
                       ),
               ),
@@ -181,109 +183,5 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
         ),
       ),
     );
-  }
-
-  /// Trip Card layout matching the wireframe sketch:
-  /// - Top row: "Erfurt -> Weimar" (Start -> Ziel) and Duration ("30min")
-  /// - Bottom row: "23 km   11.09.2026"
-  Widget _buildTripCard(Trip trip) {
-    final startCity = _shortenLocation(trip.startLocationText);
-    final endCity = _shortenLocation(trip.endLocationText);
-    final routeTitle = '$startCity -> $endCity';
-    final dateStr = _formatDateShort(trip.startTime);
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade300, width: 1),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          TripSummaryDialog.show(
-            context,
-            trip: trip,
-            isReadOnly: true,
-            onDelete: () {
-              widget.onDeleteTrip?.call(trip);
-            },
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Row: "Erfurt -> Weimar" & "30min"
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      routeTitle,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textDark,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Text(
-                    formatDuration(trip.duration),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textDark,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // Bottom Row: "23 km   11.09.2026"
-              Row(
-                children: [
-                  Text(
-                    formatKm(trip.distanceKm),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(width: 24),
-                  Text(
-                    dateStr,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _shortenLocation(String? text) {
-    if (text == null || text.isEmpty) return '—';
-    // If text contains a comma (e.g., "Nordhäuser Str., Erfurt"), extract city or last part
-    final parts = text.split(',');
-    if (parts.length > 1) {
-      return parts.last.trim();
-    }
-    return text.trim();
-  }
-
-  String _formatDateShort(DateTime dt) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(dt.day)}.${two(dt.month)}.${dt.year}';
   }
 }

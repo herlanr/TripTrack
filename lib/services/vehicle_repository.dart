@@ -3,7 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/vehicle.dart';
 
-/// Manages vehicle persistence using shared_preferences.
+/// REPOSITORY PATTERN IMPLEMENTATION (Fahrzeug-Datenhaltung)
+///
+/// Encapsulates local vehicle profile storage using [SharedPreferences].
+/// Provides methods to query vehicles by driver ID (`getVehiclesForDriver`),
+/// add new vehicles (`addVehicle`), and update odometer readings (`updateVehicleKm`).
 class VehicleRepository {
   static const String _prefsKey = 'triptrack_vehicles_v1';
 

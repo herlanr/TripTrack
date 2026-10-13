@@ -12,15 +12,15 @@ import '../services/vehicle_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/format.dart';
 import '../utils/geocoding_helper.dart';
-import '../widgets/info_row.dart';
+import '../widgets/home_action_row.dart';
+import '../widgets/home_inputs_card.dart';
+import '../widgets/last_trip_card.dart';
 import '../widgets/trip_summary_dialog.dart';
 import 'welcome_screen.dart';
 
 /// Main Home Screen matching the revised Option A design sketch:
 /// - No chart/map container to ensure the entire screen fits without scrolling.
-/// - Top inputs: Fahrer Name, Fahrzeug & Kilometerstand, Aktueller Standort.
-/// - Action Row: Side-by-side Timer + "Fahrt Starten" / "Fahrt Beenden" button.
-/// - Bottom Card: "Letzte Fahrt" showing the details of the most recently saved trip.
+/// - Modular sub-components for inputs, action row, and last trip summary.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.selectedDriver, this.onTripSaved});
 
@@ -32,9 +32,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // ---------------------------------------------------------------------
-  // 1. STATE & SERVICES
-  // ---------------------------------------------------------------------
   final _startKmController = TextEditingController();
   final _locationTracking = LocationTrackingService();
   final VehicleRepository _vehicleRepository = VehicleRepository();
@@ -105,10 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _locationTracking.dispose();
     super.dispose();
   }
-
-  // ---------------------------------------------------------------------
-  // 2. TIMERS & ACTIONS
-  // ---------------------------------------------------------------------
 
   void _startTimer() {
     _stopwatchTimer?.cancel();
@@ -350,10 +343,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${seconds}s';
   }
 
-  // ---------------------------------------------------------------------
-  // 3. UI BUILD METHODS
-  // ---------------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
     final bool isActive = _phase == TripPhase.active;
@@ -386,313 +375,44 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Top Inputs Section
-              _buildInputsSection(canStart),
+              // Top Inputs Component
+              HomeInputsCard(
+                selectedDriverName: widget.selectedDriver?.fullName ?? 'Fahrer',
+                vehicles: _vehicles,
+                selectedVehicle: _selectedVehicle,
+                startKmController: _startKmController,
+                currentLocationText: _currentLocationText,
+                startLocationText: _tripService.currentTrip?.startLocationText,
+                canStart: canStart,
+                isActive: isActive,
+                onVehicleChanged: (val) {
+                  setState(() {
+                    _selectedVehicle = val;
+                    if (val != null) {
+                      _startKmController.text = formatKmValue(val.currentKm);
+                    }
+                  });
+                },
+              ),
 
               const SizedBox(height: 20),
 
-              // Action Row: Side-by-Side Timer Badge + Start/Stop Button
-              _buildActionRow(isActive),
+              // Action Row Component: Side-by-Side Timer Badge + Start/Stop Button
+              HomeActionRow(
+                isActive: isActive,
+                isBusy: _busy,
+                elapsedFormattedTime: _formatTimerDuration(_elapsedTime),
+                onPressed: isActive ? _onStopTrip : _onStartTrip,
+              ),
 
               const SizedBox(height: 24),
 
-              // Bottom Card: Letzte Fahrt
+              // Bottom Card Component: Letzte Fahrt
               Expanded(
-                child: _buildLastTripCard(),
+                child: LastTripCard(lastTrip: _lastTrip),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  /// Top inputs: Angemeldeter Fahrer, Fahrzeug Dropdown, Kilometerstand, Aktueller Standort
-  Widget _buildInputsSection(bool canStart) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Fahrer Name (read-only)
-        InputDecorator(
-          decoration: const InputDecoration(
-            labelText: 'Fahrer Name',
-            prefixIcon:
-                Icon(Icons.person_rounded, color: AppTheme.primaryGreen),
-          ),
-          child: Text(
-            widget.selectedDriver?.fullName ?? 'Fahrer',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // Fahrzeug selector dropdown
-        if (_vehicles.isNotEmpty) ...[
-          DropdownButtonFormField<Vehicle>(
-            initialValue: _selectedVehicle,
-            decoration: const InputDecoration(
-              labelText: 'Fahrzeug auswählen',
-              prefixIcon: Icon(Icons.directions_car_outlined),
-            ),
-            items: _vehicles
-                .map(
-                  (v) => DropdownMenuItem(
-                    value: v,
-                    child: Text(v.displayName),
-                  ),
-                )
-                .toList(),
-            onChanged: canStart
-                ? (val) {
-                    setState(() {
-                      _selectedVehicle = val;
-                      if (val != null) {
-                        _startKmController.text = formatKmValue(val.currentKm);
-                      }
-                    });
-                  }
-                : null,
-          ),
-          const SizedBox(height: 12),
-        ],
-
-        // Kilometerstand input
-        TextField(
-          controller: _startKmController,
-          enabled: canStart,
-          keyboardType:
-              const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: 'Kilometerstand',
-            prefixIcon: Icon(Icons.speed_outlined),
-            suffixText: 'km',
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // Aktueller Standort / Start-Standort (wenn Fahrt aktiv)
-        if (_phase == TripPhase.active &&
-            _tripService.currentTrip?.startLocationText != null) ...[
-          InputDecorator(
-            decoration: const InputDecoration(
-              labelText: 'Start-Standort',
-              prefixIcon:
-                  Icon(Icons.flag_rounded, color: AppTheme.primaryGreen),
-            ),
-            child: Text(
-              _tripService.currentTrip!.startLocationText!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(height: 12),
-        ],
-
-        InputDecorator(
-          decoration: const InputDecoration(
-            labelText: 'Aktueller Standort',
-            prefixIcon:
-                Icon(Icons.location_on_outlined, color: Colors.blue),
-          ),
-          child: Text(
-            _currentLocationText,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Side-by-side Timer Badge + Toggle Action Button ("Fahrt Starten" / "Fahrt Beenden")
-  Widget _buildActionRow(bool isActive) {
-    return Row(
-      children: [
-        // Live Stopwatch Badge
-        Container(
-          height: 58,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isActive ? AppTheme.stopRed : Colors.grey.shade300,
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.timer_outlined,
-                size: 22,
-                color: isActive ? AppTheme.stopRed : AppTheme.primaryGreen,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                _formatTimerDuration(_elapsedTime),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isActive ? AppTheme.stopRed : AppTheme.textDark,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 12),
-
-        // Main Action Button ("Fahrt Starten" / "Fahrt Beenden")
-        Expanded(
-          child: SizedBox(
-            height: 58,
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: isActive
-                    ? AppTheme.stopRed
-                    : AppTheme.primaryLightGreen,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 3,
-              ),
-              onPressed: _busy
-                  ? null
-                  : (isActive ? _onStopTrip : _onStartTrip),
-              child: _busy
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2.5,
-                      ),
-                    )
-                  : Text(
-                      isActive ? 'Fahrt Beenden' : 'Fahrt Starten',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Card at bottom displaying summary of the most recent saved trip
-  Widget _buildLastTripCard() {
-    final trip = _lastTrip;
-
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.history_rounded,
-                  color: AppTheme.primaryGreen,
-                  size: 22,
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Last Fahrt',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textDark,
-                  ),
-                ),
-                const Spacer(),
-                if (trip != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      formatKm(trip.distanceKm),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green.shade800,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const Divider(height: 20),
-            if (trip == null)
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Noch keine Fahrt in dieser Sitzung beendet.',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              )
-            else
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      InfoRow(
-                        label: 'Zeit',
-                        value:
-                            '${formatTime(trip.startTime)}${trip.endTime != null ? ' - ${formatTime(trip.endTime!)}' : ''} (${formatDuration(trip.duration)})',
-                      ),
-                      InfoRow(
-                        label: 'KM',
-                        value: formatKm(trip.distanceKm),
-                      ),
-                      InfoRow(
-                        label: 'Anfang',
-                        value: trip.startLocationText ?? '—',
-                      ),
-                      InfoRow(
-                        label: 'Ende',
-                        value: trip.endLocationText ?? '—',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
         ),
       ),
     );

@@ -3,7 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/trip.dart';
 
-/// Persists trip logbook entries locally in SharedPreferences.
+/// REPOSITORY PATTERN IMPLEMENTATION (Fahrtenbuch-Datenhaltung)
+///
+/// Encapsulates persistent storage for completed trip logbook entries in [SharedPreferences].
+/// Every trip JSON record permanently stores metadata, start/end locations, distance,
+/// duration, and the full list of recorded GPS route points (`routePoints`).
 class TripRepository {
   static const String _prefsKey = 'triptrack_saved_trips_v1';
 

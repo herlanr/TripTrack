@@ -3,7 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/driver.dart';
 
-/// Manages driver profile persistence and enforces the 4-profile limit.
+/// REPOSITORY PATTERN IMPLEMENTATION (Fahrer-Datenhaltung)
+///
+/// Encapsulates local driver profile storage using [SharedPreferences].
+/// Provides asynchronous CRUD operations (`getDrivers`, `addDriver`, `deleteDriver`)
+/// while enforcing business rules (4-profile limit and default pre-seeding).
 class DriverRepository {
   static const int maxProfiles = 4;
   static const String _prefsKey = 'triptrack_drivers_v1';
