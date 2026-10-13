@@ -7,9 +7,18 @@ import '../services/vehicle_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/add_driver_dialog.dart';
 import '../widgets/add_vehicle_dialog.dart';
+import '../widgets/welcome_driver_section.dart';
 import 'main_screen.dart';
 
+/// Der Begrüßungsbildschirm ("Begrüßung") der Anwendung.
+///
+/// Aufgaben dieser Seite:
+/// - Anzeige aller gespeicherten Fahrer-Profile zur Auswahl per Radio-Button.
+/// - Begrenzung auf maximal 4 Fahrer-Profile gemäß Anforderung.
+/// - Durchführung des 2-stufigen Registrierungsprozesses für neue Fahrer (Fahrer + Pflicht-Fahrzeug).
+/// - Weiterleitung zum Haupt-Dashboard ([MainScreen]) mit dem ausgewählten Fahrer.
 class WelcomeScreen extends StatefulWidget {
+
   const WelcomeScreen({super.key});
 
   @override
@@ -30,6 +39,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     _loadDrivers();
   }
 
+  /// Lädt alle Fahrer-Profile aus dem [DriverRepository]
+  /// und wählt standardmäßig den ersten Fahrer aus der Liste aus.
   Future<void> _loadDrivers() async {
     setState(() => _loading = true);
     final drivers = await _driverRepository.getDrivers();
@@ -46,6 +57,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
   }
 
+  /// Startet den Vorgang zum Hinzufügen eines neuen Fahrers:
+  /// 1. Prüft, ob das Limit von 4 Profilen erreicht ist.
+  /// 2. Öffnet den [AddDriverDialog] zur Eingabe der Fahrerdaten (Vorname, Name, Geburtsdatum).
+  /// 3. Öffnet direkt danach den [AddVehicleDialog] zur Eingabe des Pflicht-Fahrzeugs.
+  /// 4. Speichert beide Entitäten in den Repositories und aktualisiert die Ansicht.
   Future<void> _onAddDriverPressed() async {
     if (_drivers.length >= DriverRepository.maxProfiles) {
       _showSnack(
@@ -54,7 +70,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       return;
     }
 
-    // Step 1: Driver Creation
+    // Schritt 1: Fahrer-Erstellung
     final Driver? newDriver = await showDialog<Driver>(
       context: context,
       builder: (context) => const AddDriverDialog(),
@@ -62,7 +78,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if (newDriver == null) return;
 
-    // Step 2: Mandatory Vehicle Creation for the new driver
+    // Schritt 2: Pflicht-Fahrzeug-Erstellung für den neuen Fahrer
     if (!mounted) return;
     final Vehicle? newVehicle = await showDialog<Vehicle>(
       context: context,
@@ -88,6 +104,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
+  /// Zeigt einen Bestätigungsdialog zum Löschen eines Fahrer-Profils
+  /// und entfernt das Profil bei Bestätigung aus dem [DriverRepository].
   Future<void> _onDeleteDriver(Driver driver) async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -115,6 +133,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
+  /// Überprüft, ob der ausgewählte Fahrer mindestens ein Fahrzeug besitzt,
+  /// und leitet ihn anschließend mit seiner Fahrer-Session zur [MainScreen] weiter.
   Future<void> _onWeiterPressed() async {
     final driver = _selectedDriver;
     if (driver == null) {
@@ -122,7 +142,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       return;
     }
 
-    // Ensure selected driver has at least 1 vehicle
+    // Sicherstellen, dass der gewählte Fahrer mindestens ein Fahrzeug hat
     final vehicles = await _vehicleRepository.getVehiclesForDriver(driver.id);
     if (vehicles.isEmpty) {
       if (!mounted) return;
@@ -147,6 +167,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
+  /// Zeigt eine Snackbar-Benachrichtigung mit der angegebenen Nachricht an.
   void _showSnack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context)
@@ -194,77 +215,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                     const SizedBox(height: 28),
 
-                    if (_loading)
-                      const CircularProgressIndicator()
-                    else if (_drivers.isEmpty) ...[
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Kein Eintrag vorhanden.\nBitte neu Fahrer einfügen.',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ] else ...[
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: RadioGroup<Driver>(
-                          groupValue: _selectedDriver,
-                          onChanged: (Driver? val) {
-                            setState(() => _selectedDriver = val);
-                          },
-                          child: Column(
-                            children: [
-                              for (int i = 0; i < _drivers.length; i++) ...[
-                                RadioListTile<Driver>(
-                                  value: _drivers[i],
-                                  activeColor: AppTheme.primaryGreen,
-                                  title: Text(
-                                    _drivers[i].fullName,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    'Geb.: ${_formatDate(_drivers[i].dateOfBirth)}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  secondary: IconButton(
-                                    icon: const Icon(
-                                      Icons.delete_outline_rounded,
-                                      color: Colors.grey,
-                                      size: 20,
-                                    ),
-                                    tooltip: 'Fahrer löschen',
-                                    onPressed: () => _onDeleteDriver(_drivers[i]),
-                                  ),
-                                ),
-                                if (i < _drivers.length - 1)
-                                  const Divider(height: 1),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                    // Driver selection area component
+                    WelcomeDriverSection(
+                      loading: _loading,
+                      drivers: _drivers,
+                      selectedDriver: _selectedDriver,
+                      onDriverSelected: (val) {
+                        setState(() => _selectedDriver = val);
+                      },
+                      onDeleteDriver: _onDeleteDriver,
+                    ),
 
                     const SizedBox(height: 32),
 
@@ -328,10 +288,5 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ),
       ),
     );
-  }
-
-  String _formatDate(DateTime dt) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(dt.day)}.${two(dt.month)}.${dt.year}';
   }
 }

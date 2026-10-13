@@ -3,15 +3,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/driver.dart';
 
-/// REPOSITORY PATTERN IMPLEMENTATION (Fahrer-Datenhaltung)
-///
-/// Encapsulates local driver profile storage using [SharedPreferences].
-/// Provides asynchronous CRUD operations (`getDrivers`, `addDriver`, `deleteDriver`)
-/// while enforcing business rules (4-profile limit and default pre-seeding).
+/// Kapselt die lokale Speicherung von Fahrer-Profilen in [SharedPreferences].
 class DriverRepository {
+
   static const int maxProfiles = 4;
+
+  /// Schlüssel für die SharedPreferences-Speicherung
   static const String _prefsKey = 'triptrack_drivers_v1';
 
+  /// Standardmäßiges Test-Fahrerprofil für den Schnellstart
   static final Driver defaultTestDriver = Driver(
     id: 'test_driver_101',
     firstName: 'Test',
@@ -22,7 +22,8 @@ class DriverRepository {
   final List<Driver> _inMemoryDrivers = [];
   bool _initialized = false;
 
-  /// Loads stored drivers from local storage, pre-seeding a default test driver if empty.
+  /// Lädt alle gespeicherten Fahrer aus dem lokalen Speicher.
+  /// Erstellt automatisch das Test-Fahrerprofil, falls der Speicher leer ist.
   Future<List<Driver>> getDrivers() async {
     if (_initialized) return List.unmodifiable(_inMemoryDrivers);
 
@@ -37,10 +38,10 @@ class DriverRepository {
         );
       }
     } catch (_) {
-      // Fall back to in-memory list on storage error
+      // Rückfalloption bei Speicherfehler
     }
 
-    // Pre-seed default test driver if no drivers exist
+    // Standardmäßigen Test-Fahrer anlegen, falls noch keine Profile existieren
     if (_inMemoryDrivers.isEmpty) {
       _inMemoryDrivers.add(defaultTestDriver);
       await _saveToDisk();
@@ -50,9 +51,9 @@ class DriverRepository {
     return List.unmodifiable(_inMemoryDrivers);
   }
 
-  /// Adds a new driver profile. Throws [StateError] if limit (4) is reached.
+  /// Fügt ein neues Fahrer-Profil hinzu. Wirft einen [StateError], wenn das Limit (4) erreicht ist.
   Future<void> addDriver(Driver driver) async {
-    await getDrivers(); // ensure initialized
+    await getDrivers(); // Sicherstellen, dass die Daten geladen sind
 
     if (_inMemoryDrivers.length >= maxProfiles) {
       throw StateError(
@@ -64,13 +65,14 @@ class DriverRepository {
     await _saveToDisk();
   }
 
-  /// Deletes a driver profile by ID.
+  /// Löscht ein Fahrer-Profil anhand seiner ID.
   Future<void> deleteDriver(String driverId) async {
-    await getDrivers(); // ensure initialized
+    await getDrivers();
     _inMemoryDrivers.removeWhere((d) => d.id == driverId);
     await _saveToDisk();
   }
 
+  /// Speichert die aktuelle Fahrerliste als JSON-String auf der Festplatte.
   Future<void> _saveToDisk() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -79,7 +81,7 @@ class DriverRepository {
       );
       await prefs.setString(_prefsKey, jsonString);
     } catch (_) {
-      // Storage error fallback
+      // Fehler beim Speichern ignorieren
     }
   }
 }

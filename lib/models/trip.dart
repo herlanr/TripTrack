@@ -1,7 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
+
 import '../utils/geo.dart';
 import 'location_point.dart';
 
-/// Represents a single completed or active vehicle trip (Fahrtenbuch entry).
+part 'trip.g.dart';
+
+/// Repräsentiert eine Fahrt (Fahrt-Entität aus dem ER-Diagramm).
+@JsonSerializable(explicitToJson: true)
 class Trip {
   Trip({
     String? id,
@@ -21,33 +26,40 @@ class Trip {
   }) : id = id ?? DateTime.now().millisecondsSinceEpoch.toString();
 
   final String id;
+
   final String driverName;
-  final String? driverId; // Personen_ID (FK)
-  final String? vehicleId; // Fahrzeug_ID (FK)
+
+  /// Zuordnung zum Fahrer (Personen_ID als Fremdschlüssel)
+  final String? driverId;
+
+  /// Zuordnung zum Fahrzeug (Fahrzeug_ID als Fremdschlüssel)
+  final String? vehicleId;
+
   final DateTime startTime;
 
-  /// Odometer reading at start
   final double startKm;
 
-  /// GPS coordinates at start
   final double? startLatitude;
+
   final double? startLongitude;
 
-  /// Resolved street address for start
   String? startLocationText;
 
-  // Filled in when the trip is stopped
   DateTime? endTime;
+
   double? endLatitude;
+
   double? endLongitude;
+
   String? endLocationText;
 
-  /// GPS points collected during driving (recorded every 3 minutes)
+  /// Liste aller während der Fahrt erfassten GPS-Routenpunkte
   final List<LocationPoint> routePoints;
 
+  /// Gibt an, ob die Fahrt bereits beendet ist.
   bool get isFinished => endTime != null;
 
-  /// Total distance in km calculated via Haversine sum over all GPS route points
+  /// Berechnet die Gesamtstrecke der Fahrt in km über die Haversine-Formel.
   double get distanceKm {
     final List<LocationPoint> points = allGpsPoints();
     if (points.length < 2) return 0;
@@ -63,9 +75,9 @@ class Trip {
     return total;
   }
 
-  static const double _minRouteSegmentKm = 0.01; // 10 meters threshold
+  static const double _minRouteSegmentKm = 0.01; // Mindestabstand 10 Meter
 
-  /// Returns all recorded GPS positions in chronological order
+  /// Gibt alle erfassten GPS-Punkte in chronologischer Reihenfolge zurück.
   List<LocationPoint> allGpsPoints() {
     final List<LocationPoint> points = [];
 
@@ -110,51 +122,19 @@ class Trip {
     return points;
   }
 
-  /// Trip duration
+  /// Berechnet die Gesamtdauer der Fahrt.
   Duration get duration {
     final end = endTime;
     if (end == null) return Duration.zero;
     return end.difference(startTime);
   }
 
+  /// Anzahl der Zwischenpunkte auf der Route
   int get intermediatePointCount => routePoints.length;
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'driverName': driverName,
-        'driverId': driverId,
-        'vehicleId': vehicleId,
-        'startKm': startKm,
-        'startTime': startTime.toIso8601String(),
-        'startLatitude': startLatitude,
-        'startLongitude': startLongitude,
-        'startLocationText': startLocationText,
-        'endTime': endTime?.toIso8601String(),
-        'endLatitude': endLatitude,
-        'endLongitude': endLongitude,
-        'endLocationText': endLocationText,
-        'routePoints': routePoints.map((p) => p.toJson()).toList(),
-      };
+  /// Erstellt eine Fahrt-Instanz aus einem JSON-Map.
+  factory Trip.fromJson(Map<String, dynamic> json) => _$TripFromJson(json);
 
-  factory Trip.fromJson(Map<String, dynamic> json) => Trip(
-        id: json['id'] as String?,
-        driverName: json['driverName'] as String,
-        driverId: json['driverId'] as String?,
-        vehicleId: json['vehicleId'] as String?,
-        startKm: (json['startKm'] as num).toDouble(),
-        startTime: DateTime.parse(json['startTime'] as String),
-        startLatitude: (json['startLatitude'] as num?)?.toDouble(),
-        startLongitude: (json['startLongitude'] as num?)?.toDouble(),
-        startLocationText: json['startLocationText'] as String?,
-        endTime: json['endTime'] != null
-            ? DateTime.parse(json['endTime'] as String)
-            : null,
-        endLatitude: (json['endLatitude'] as num?)?.toDouble(),
-        endLongitude: (json['endLongitude'] as num?)?.toDouble(),
-        endLocationText: json['endLocationText'] as String?,
-        routePoints: (json['routePoints'] as List<dynamic>?)
-                ?.map((e) => LocationPoint.fromJson(e as Map<String, dynamic>))
-                .toList() ??
-            const [],
-      );
+  /// Konvertiert die Fahrt-Instanz in ein JSON-Map.
+  Map<String, dynamic> toJson() => _$TripToJson(this);
 }

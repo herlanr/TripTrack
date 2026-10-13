@@ -8,13 +8,15 @@ import '../models/trip.dart';
 import '../models/vehicle.dart';
 import '../utils/format.dart';
 
-/// Handles exporting Fahrtenbuch trip logs into .csv or real PDF files.
-/// Works cross-platform (Chrome/Web, Android, iOS) using in-memory XFile data.
+/// SERVICE PATTERN IMPLEMENTATION (Export-Dienst)
+///
+/// Bietet Funktionen zum Exportieren von Fahrtenbuch-Einträgen in das CSV-
+/// oder PDF-Format und öffnet das native Share-Menü des Betriebssystems.
 class ExportService {
-  /// Generates the requested file format and opens the native Share / Download dialog.
+  /// Generiert das angeforderte Dateiformat (.csv oder pdf) und öffnet das Teilen-Menü.
   static Future<void> exportTrips({
     required List<Trip> trips,
-    required String format, // 'csv' or 'pdf'
+    required String format, // 'csv' oder 'pdf'
     Vehicle? vehicleFilter,
   }) async {
     final filteredTrips = vehicleFilter != null
@@ -51,7 +53,7 @@ class ExportService {
     );
   }
 
-  /// Generates a real formatted PDF document with styled tables.
+  /// Generiert ein formatiertes PDF-Dokument mit Tabellenstruktur über das [pdf]-Paket.
   static Future<Uint8List> _generatePdf(List<Trip> trips) async {
     final pdf = pw.Document();
 
@@ -130,6 +132,7 @@ class ExportService {
     return pdf.save();
   }
 
+  /// Generiert eine kommagetrennte CSV-Zeichenkette aus den Fahrtenbuch-Einträgen.
   static String _generateCsv(List<Trip> trips) {
     final List<List<dynamic>> rows = [
       [

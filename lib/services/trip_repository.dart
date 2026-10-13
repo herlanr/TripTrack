@@ -5,16 +5,15 @@ import '../models/trip.dart';
 
 /// REPOSITORY PATTERN IMPLEMENTATION (Fahrtenbuch-Datenhaltung)
 ///
-/// Encapsulates persistent storage for completed trip logbook entries in [SharedPreferences].
-/// Every trip JSON record permanently stores metadata, start/end locations, distance,
-/// duration, and the full list of recorded GPS route points (`routePoints`).
+/// Kapselt die dauerhafte Speicherung von beendeten Fahrtenbuch-Einträgen in [SharedPreferences].
+/// Jeder Eintrag speichert Metadaten, Orte, Strecken, Dauer und die vollständige GPS-Routenliste (`routePoints`).
 class TripRepository {
   static const String _prefsKey = 'triptrack_saved_trips_v1';
 
   final List<Trip> _inMemoryTrips = [];
   bool _initialized = false;
 
-  /// Loads all saved trips from disk.
+  /// Lädt alle gespeicherten Fahrten aus dem lokalen Speicher.
   Future<List<Trip>> getTrips() async {
     if (_initialized) return List.unmodifiable(_inMemoryTrips);
 
@@ -29,21 +28,21 @@ class TripRepository {
         );
       }
     } catch (_) {
-      // Fallback on error
+      // Fehler beim Laden ignorieren
     }
 
     _initialized = true;
     return List.unmodifiable(_inMemoryTrips);
   }
 
-  /// Saves a newly completed trip to local storage.
+  /// Speichert eine neu beendete Fahrt dauerhaft im lokalen Speicher.
   Future<void> saveTrip(Trip trip) async {
-    await getTrips(); // ensure initialized
-    _inMemoryTrips.insert(0, trip); // newest first
+    await getTrips(); // Sicherstellen, dass die Daten geladen sind
+    _inMemoryTrips.insert(0, trip); // Neueste Fahrt zuerst
     await _saveToDisk();
   }
 
-  /// Deletes a trip by ID.
+  /// Löscht einen Fahrtenbuch-Eintrag anhand seiner ID.
   Future<void> deleteTrip(String tripId) async {
     await getTrips();
     _inMemoryTrips.removeWhere((t) => t.id == tripId);
@@ -58,7 +57,7 @@ class TripRepository {
       );
       await prefs.setString(_prefsKey, jsonString);
     } catch (_) {
-      // Storage error fallback
+      // Fehler beim Speichern ignorieren
     }
   }
 }

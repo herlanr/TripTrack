@@ -1,3 +1,9 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'driver.g.dart';
+
+/// Repräsentiert ein Fahrer-Profil (Fahrer-Entität aus dem ER-Diagramm).
+@JsonSerializable()
 class Driver {
   const Driver({
     required this.id,
@@ -13,25 +19,19 @@ class Driver {
 
   String get fullName => '$firstName $lastName';
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'firstName': firstName,
-        'lastName': lastName,
-        'dateOfBirth': dateOfBirth.toIso8601String(),
-      };
+  /// Erstellt eine Fahrer-Instanz aus einem JSON-Map.
+  factory Driver.fromJson(Map<String, dynamic> json) => _$DriverFromJson(json);
 
-  factory Driver.fromJson(Map<String, dynamic> json) => Driver(
-        id: json['id'] as String,
-        firstName: json['firstName'] as String,
-        lastName: json['lastName'] as String,
-        dateOfBirth: DateTime.parse(json['dateOfBirth'] as String),
-      );
+  /// Konvertiert die Fahrer-Instanz in ein JSON-Map.
+  Map<String, dynamic> toJson() => _$DriverToJson(this);
 
+  /// Prüft die Gleichheit zweier Fahrer anhand ihrer ID.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Driver && runtimeType == other.runtimeType && id == other.id;
 
+  /// Generiert den Hashcode basierend auf der eindeutigen Fahrer-ID.
   @override
   int get hashCode => id.hashCode;
 }

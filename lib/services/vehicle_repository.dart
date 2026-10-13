@@ -5,12 +5,13 @@ import '../models/vehicle.dart';
 
 /// REPOSITORY PATTERN IMPLEMENTATION (Fahrzeug-Datenhaltung)
 ///
-/// Encapsulates local vehicle profile storage using [SharedPreferences].
-/// Provides methods to query vehicles by driver ID (`getVehiclesForDriver`),
-/// add new vehicles (`addVehicle`), and update odometer readings (`updateVehicleKm`).
+/// Kapselt die lokale Speicherung von Fahrzeugen in [SharedPreferences].
+/// Bietet Methoden zum Abfragen von Fahrzeugen nach Fahrer-ID (`getVehiclesForDriver`),
+/// Hinzufügen von Fahrzeugen (`addVehicle`) und Aktualisieren des Tacho-Standes (`updateVehicleKm`).
 class VehicleRepository {
   static const String _prefsKey = 'triptrack_vehicles_v1';
 
+  /// Standardmäßiges Test-Fahrzeug (Volkswagen Golf VIII)
   static final Vehicle defaultTestVehicle = Vehicle(
     id: 'test_vehicle_202',
     driverId: 'test_driver_101',
@@ -37,10 +38,10 @@ class VehicleRepository {
         );
       }
     } catch (_) {
-      // Storage fallback
+      // Fehler beim Speichern ignorieren
     }
 
-    // Pre-seed default test vehicle if empty
+    // Standardmäßiges Test-Fahrzeug anlegen, falls noch keine Fahrzeuge existieren
     if (_inMemoryVehicles.isEmpty) {
       _inMemoryVehicles.add(defaultTestVehicle);
       await _saveToDisk();
@@ -50,8 +51,8 @@ class VehicleRepository {
     return _inMemoryVehicles;
   }
 
-  /// Returns all vehicles associated with a specific driver ID.
-  /// If the driver has no vehicle, automatically assigns a default vehicle.
+  /// Gibt alle Fahrzeuge zurück, die einer bestimmten Fahrer-ID zugeordnet sind.
+  /// Falls der Fahrer noch kein Fahrzeug hat, wird ihm automatisch ein Standard-Fahrzeug zugewiesen.
   Future<List<Vehicle>> getVehiclesForDriver(String driverId) async {
     final all = await _loadAllVehicles();
     final driverVehicles = all.where((v) => v.driverId == driverId).toList();
@@ -73,14 +74,14 @@ class VehicleRepository {
     return driverVehicles;
   }
 
-  /// Adds a new vehicle and saves to disk.
+  /// Fügt ein neues Fahrzeug hinzu und speichert es lokal.
   Future<void> addVehicle(Vehicle vehicle) async {
     await _loadAllVehicles();
     _inMemoryVehicles.add(vehicle);
     await _saveToDisk();
   }
 
-  /// Updates the current kilometerstand of a vehicle.
+  /// Aktualisiert den aktuellen Kilometerstand eines Fahrzeugs.
   Future<void> updateVehicleKm(String vehicleId, double newKm) async {
     await _loadAllVehicles();
     final index = _inMemoryVehicles.indexWhere((v) => v.id == vehicleId);
@@ -91,7 +92,7 @@ class VehicleRepository {
     }
   }
 
-  /// Deletes a vehicle.
+  /// Löscht ein Fahrzeug anhand seiner ID.
   Future<void> deleteVehicle(String vehicleId) async {
     await _loadAllVehicles();
     _inMemoryVehicles.removeWhere((v) => v.id == vehicleId);
@@ -106,7 +107,7 @@ class VehicleRepository {
       );
       await prefs.setString(_prefsKey, jsonString);
     } catch (_) {
-      // Storage fallback
+      // Fehler beim Speichern ignorieren
     }
   }
 }

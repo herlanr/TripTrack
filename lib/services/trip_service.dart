@@ -6,16 +6,22 @@ import '../models/trip_phase.dart';
 import '../utils/geocoding_helper.dart';
 import 'location_tracking_service.dart';
 
-/// Business logic service for the trip lifecycle:
-/// - Starts and stops trips cleanly.
-/// - Collects GPS route points during active driving.
-/// - Resolves GPS coordinates into street addresses via GeocodingHelper.
+/// SERVICE PATTERN IMPLEMENTATION (Fahrt-Verwaltungsdienst)
+///
+/// Verwaltet den gesamten Lebenszyklus einer Fahrt:
+/// - Starten und sofortiges Beenden von Fahrten.
+/// - Erfassen von GPS-Routenpunkten in 3-Minuten-Intervallen.
+/// - Automatische Adressauflösung für Start- und Zielort über GeocodingHelper.
 class TripService {
+  /// Erstellt eine neue TripService-Instanz mit dem übergebenen LocationTrackingService.
   TripService(this._locationService);
 
   final LocationTrackingService _locationService;
 
+  /// Zeitintervall für das Speichern von Zwischen-GPS-Punkten auf der Route (3 Minuten).
   static const Duration minPointInterval = Duration(minutes: 3);
+
+  /// Maximale Anzahl an speicherbaren GPS-Routenpunkten pro Fahrt.
   static const int maxPoints = 500;
 
   Trip? _trip;
@@ -23,17 +29,20 @@ class TripService {
   final StreamController<int> _pointCountController =
       StreamController<int>.broadcast();
 
+  /// Die aktuell laufende oder zuletzt beendete Fahrt.
   Trip? get currentTrip => _trip;
 
+  /// Der aktuelle Status des Fahrt-Lebenszyklus (idle, active, finished).
   TripPhase get phase => _trip == null
       ? TripPhase.idle
       : _trip!.isFinished
           ? TripPhase.finished
           : TripPhase.active;
 
+  /// Stream für Live-Aktualisierungen der Anzahl erfasster GPS-Punkte.
   Stream<int> get pointCountUpdates => _pointCountController.stream;
 
-  /// Starts a new trip and resolves the start location address.
+  /// Startet eine neue Fahrt und löst die Startadresse über Reverse Geocoding auf.
   Future<Trip> startTrip({
     required String driverName,
     String? driverId,
@@ -70,6 +79,7 @@ class TripService {
     return trip;
   }
 
+  /// Speichert einen manuell eingegebenen Startort (wenn GPS nicht verfügbar war).
   void setManualStartLocation(String text) {
     final trip = _trip;
     if (trip != null && !trip.isFinished) {
@@ -77,7 +87,7 @@ class TripService {
     }
   }
 
-  /// Stops the current trip and resolves the end location address before returning.
+  /// Beendet die aktuelle Fahrt sofort (<0,1s) und löst die Zieladresse auf.
   Future<Trip> stopTrip() async {
     final trip = _trip;
     if (trip == null || trip.isFinished) {
@@ -86,7 +96,7 @@ class TripService {
 
     trip.endTime = DateTime.now();
 
-    // Instant location lookup using cached lastKnownPoint or fast position fix
+    // Sofortiger Zugriff auf den gekauften letzten GPS-Fix
     final LocationPoint? endFix = _locationService.lastKnownPoint ??
         await _locationService.getCurrentPosition();
 
@@ -105,15 +115,18 @@ class TripService {
     return trip;
   }
 
+  /// Speichert einen manuell eingegebenen Zielort (wenn GPS nicht verfügbar war).
   void setManualEndLocation(String text) {
     _trip?.endLocationText = text;
   }
 
+  /// Setzt den Dienst zurück und gibt die aktuelle Fahrt frei.
   void reset() {
     _stopCollectingPoints();
     _trip = null;
   }
 
+  /// Gibt alle verwendeten Ressourcen frei.
   void dispose() {
     _stopCollectingPoints();
     _pointCountController.close();

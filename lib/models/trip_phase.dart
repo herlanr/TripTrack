@@ -1,11 +1,11 @@
-/// The lifecycle of a trip. The UI switches buttons based on this.
+/// Der Lebenszyklus-Status einer Fahrt.
 enum TripPhase {
-  /// No trip is active.
+  /// Keine Fahrt ist aktuell aktiv.
   idle,
 
-  /// A trip was started and is still running.
+  /// Eine Fahrt wurde gestartet und läuft aktuell.
   active,
 
-  /// The trip was stopped and the summary was shown.
+  /// Die Fahrt wurde beendet und die Zusammenfassung wurde angezeigt.
   finished,
 }

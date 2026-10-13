@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import '../models/trip.dart';
 import '../utils/format.dart';
 
-/// A vertical "Start / 14:10 / 14:15 / … / End" list showing which way
-/// the driver went, based on the GPS points collected during the trip.
-///
-/// This is the data foundation for the future route visualization —
-/// today it is a plain list, later it can become a map route.
+/// Stellt den chronologischen Routenverlauf einer Fahrt als vertikale Zeitleiste dar.
 class RouteList extends StatelessWidget {
+  /// Erstellt eine neue RouteList-Instanz für die angegebene Fahrt.
   const RouteList({super.key, required this.trip});
 
+  /// Die darzustellende Fahrt
   final Trip trip;
 
   @override
@@ -20,7 +18,7 @@ class RouteList extends StatelessWidget {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Text(
-          'No GPS positions were recorded for this trip.',
+          'Keine GPS-Positionen für diese Fahrt erfasst.',
           style: TextStyle(color: Colors.black54),
         ),
       );
@@ -36,9 +34,6 @@ class RouteList extends StatelessWidget {
     );
   }
 
-  /// Start and end are resolved to the recorded positions when a GPS fix
-  /// exists; otherwise the (manually entered) location text is shown,
-  /// or "—" when nothing was recorded at all.
   List<_RouteEntry> _buildEntries(Trip trip) {
     final List<_RouteEntry> entries = [
       _RouteEntry(
@@ -93,8 +88,6 @@ class _RouteRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Time + connector line (like the examples in the prompt:
-          // "14:00 Erfurt / 14:20 Jena / …").
           SizedBox(
             width: 56,
             child: Column(
@@ -120,7 +113,6 @@ class _RouteRow extends StatelessWidget {
               ],
             ),
           ),
-          // Dot.
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Container(
@@ -133,7 +125,6 @@ class _RouteRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          // Location.
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 16),

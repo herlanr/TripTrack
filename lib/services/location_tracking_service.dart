@@ -4,33 +4,42 @@ import 'package:geolocator/geolocator.dart';
 
 import '../models/location_point.dart';
 
-/// Result status of location permission and service checks.
+/// Status des Standortberechtigungs- und Dienstchecks.
 enum LocationPermissionResult {
+  /// Berechtigung erteilt
   granted,
+
+  /// Berechtigung abgelehnt
   denied,
+
+  /// Berechtigung dauerhaft abgelehnt
   deniedForever,
+
+  /// Standortdienste (GPS) am Gerät ausgeschaltet
   serviceDisabled,
 }
 
-/// Wraps the geolocator plugin to provide:
-/// 1. Location permission checks and user advice status.
-/// 2. Fast, non-blocking GPS fix retrieval (with timeout + last-known fallback).
-/// 3. Continuous position streaming during an active trip.
+/// Kapselt das Geolocator-Plugin für schnelle GPS-Messergebnisse:
+/// 1. Überprüfung von Standortberechtigungen.
+/// 2. Schnelle Abfrage der GPS-Position mit 2-Sekunden-Timeout.
+/// 3. Live-Streaming von GPS-Koordinaten während einer aktiven Fahrt.
 class LocationTrackingService {
   StreamSubscription<Position>? _subscription;
   StreamController<LocationPoint>? _controller;
 
-  /// Latest GPS fix received during active stream or manual check.
+  /// Die zuletzt empfangene GPS-Position
   LocationPoint? lastKnownPoint;
 
+  /// Gibt an, ob aktuell ein GPS-Tracking-Stream läuft.
   bool get isTracking => _subscription != null;
 
+  /// Stream für Live-GPS-Koordinaten während einer aktiven Fahrt.
   Stream<LocationPoint> get liveUpdates {
     final controller = _controller;
     return controller != null ? controller.stream : const Stream.empty();
   }
 
-  /// Checks location service status and permission level.
+  /// Prüft den GPS-Status und die Standortberechtigungen des Geräts.
   Future<LocationPermissionResult> checkPermissionStatus() async {
     if (!await Geolocator.isLocationServiceEnabled()) {
       return LocationPermissionResult.serviceDisabled;
@@ -51,17 +60,17 @@ class LocationTrackingService {
     return LocationPermissionResult.granted;
   }
 
-  /// Opens app settings on the device.
+  /// Öffnet die App-Einstellungen auf dem Gerät.
   Future<void> openAppSettings() async {
     await Geolocator.openAppSettings();
   }
 
-  /// Opens system location settings on the device.
+  /// Öffnet die GPS-Standorteinstellungen auf dem Gerät.
   Future<void> openLocationSettings() async {
     await Geolocator.openLocationSettings();
   }
 
-  /// Checks location permissions and returns a fast GPS fix if granted.
+  /// Prüft die Berechtigungen und fordert bei Erfolg eine schnelle GPS-Position an.
   Future<LocationPoint?> requestFixWithPermission() async {
     final status = await checkPermissionStatus();
     if (status != LocationPermissionResult.granted) {
@@ -70,8 +79,8 @@ class LocationTrackingService {
     return getCurrentPosition();
   }
 
-  /// Retrieves current position with a 2-second timeout, falling back to
-  /// `getLastKnownPosition` or `lastKnownPoint` so the app NEVER hangs.
+  /// Fragt die aktuelle GPS-Position mit einem 2-Sekunden-Timeout ab,
+  /// um lange Verzögerungen beim Beenden einer Fahrt zu vermeiden.
   Future<LocationPoint?> getCurrentPosition() async {
     try {
       final Position position = await Geolocator.getCurrentPosition(
@@ -84,7 +93,6 @@ class LocationTrackingService {
       if (point != null) lastKnownPoint = point;
       return point;
     } catch (_) {
-      // Timeout or fix unavailable: fall back to last known cached position
       final Position? last = await Geolocator.getLastKnownPosition();
       final point = _toPoint(last) ?? lastKnownPoint;
       if (point != null) lastKnownPoint = point;
@@ -92,7 +100,7 @@ class LocationTrackingService {
     }
   }
 
-  /// Starts live GPS tracking stream.
+  /// Startet den Live-GPS-Position-Stream.
   Stream<LocationPoint> startTracking() {
     if (isTracking) {
       stop();
@@ -117,6 +125,7 @@ class LocationTrackingService {
     return liveUpdates;
   }
 
+  /// Beendet den GPS-Stream.
   Future<void> stop() async {
     await _subscription?.cancel();
     _subscription = null;
@@ -124,6 +133,7 @@ class LocationTrackingService {
     _controller = null;
   }
 
+  /// Gibt Ressourcen frei.
   void dispose() {
     _subscription?.cancel();
     _subscription = null;

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
-/// A label/value row used in the trip data list and the trip summary.
+/// Stellt eine Schlüssel-Wert-Zeile für Zusammenfassungen und Fahrtdetails dar.
 class InfoRow extends StatelessWidget {
+  /// Erstellt eine neue InfoRow-Instanz.
   const InfoRow({super.key, required this.label, required this.value});
 
+  /// Beschriftung auf der linken Seite
   final String label;
+
+  /// Wert auf der rechten Seite
   final String value;
 
   @override
@@ -15,15 +19,17 @@ class InfoRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 150,
+            width: 130,
             child: Text(
               label,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
           Expanded(
-            child: Text(value.isEmpty ? '—' : value,
-                style: const TextStyle(color: Colors.black87)),
+            child: Text(
+              value.isEmpty ? '—' : value,
+              style: const TextStyle(color: Colors.black87),
+            ),
           ),
         ],
       ),

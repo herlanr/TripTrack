@@ -1,4 +1,9 @@
-/// Represents a single GPS coordinate fix (latitude, longitude, timestamp).
+import 'package:json_annotation/json_annotation.dart';
+
+part 'location_point.g.dart';
+
+/// Repräsentiert einen einzelnen GPS-Standortpunkt (Breitengrad, Längengrad, Zeitstempel).
+@JsonSerializable()
 class LocationPoint {
   const LocationPoint({
     required this.latitude,
@@ -10,21 +15,16 @@ class LocationPoint {
   final double longitude;
   final DateTime timestamp;
 
-  /// Human-readable "lat, lon" for screen display or fallback.
+  /// Gibt die Koordinaten als lesbaren Text zurück ("lat, lon").
   String describe() =>
       '${latitude.toStringAsFixed(6)}, ${longitude.toStringAsFixed(6)}';
 
-  Map<String, dynamic> toJson() => {
-        'latitude': latitude,
-        'longitude': longitude,
-        'timestamp': timestamp.toIso8601String(),
-      };
+  /// Erstellt einen LocationPoint aus einem JSON-Map.
+  factory LocationPoint.fromJson(Map<String, dynamic> json) =>
+      _$LocationPointFromJson(json);
 
-  factory LocationPoint.fromJson(Map<String, dynamic> json) => LocationPoint(
-        latitude: (json['latitude'] as num).toDouble(),
-        longitude: (json['longitude'] as num).toDouble(),
-        timestamp: DateTime.parse(json['timestamp'] as String),
-      );
+  /// Konvertiert den LocationPoint in ein JSON-Map.
+  Map<String, dynamic> toJson() => _$LocationPointToJson(this);
 
   @override
   String toString() => 'LocationPoint($latitude, $longitude, $timestamp)';

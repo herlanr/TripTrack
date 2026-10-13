@@ -1,21 +1,23 @@
-/// Small formatting helpers so the screens don't contain ad-hoc
-/// date/number formatting in every place.
+/// UTILITY HELPER FUNCTIONS (Formatierungs-Hilfsfunktionen)
+///
+/// Bietet einheitliche Funktionen zur Formatierung von Datum, Uhrzeit,
+/// Dauer und Kilometerangaben im deutschen Zahlenformat.
 library;
 
-/// Formats a date and time as "15.09.2026 14:00".
+/// Formatiert Datum und Uhrzeit im deutschen Format "15.09.2026 14:00".
 String formatDateTime(DateTime dateTime) {
   String two(int value) => value.toString().padLeft(2, '0');
   return '${two(dateTime.day)}.${two(dateTime.month)}.${dateTime.year} '
       '${two(dateTime.hour)}:${two(dateTime.minute)}';
 }
 
-/// Formats a time of day as "14:00".
+/// Formatiert die Uhrzeit im Format "14:00".
 String formatTime(DateTime dateTime) {
   String two(int value) => value.toString().padLeft(2, '0');
   return '${two(dateTime.hour)}:${two(dateTime.minute)}';
 }
 
-/// Formats a duration as "1h", "1h 05min" or "42min".
+/// Formatiert eine Zeitdauer im Format "1h 05min" oder "42min" oder "15s".
 String formatDuration(Duration duration) {
   if (duration.inMinutes < 1) {
     return '${duration.inSeconds}s';
@@ -27,8 +29,7 @@ String formatDuration(Duration duration) {
   return '${hours}h ${minutes.toString().padLeft(2, '0')}min';
 }
 
-/// Formats a kilometer value: 24.0 -> "24 km", 24.5 -> "24,5 km".
-/// German number format uses a comma as decimal separator.
+/// Formatiert ein Kilometerschritt-Ergebnis mit Komma als Dezimaltrenner: 24.5 -> "24,5 km".
 String formatKm(double km) {
   final bool isWhole = km == km.truncateToDouble();
   final String value =
@@ -36,6 +37,6 @@ String formatKm(double km) {
   return '$value km';
 }
 
-/// Formats an odometer value: 254660.0 -> "254660".
+/// Formatiert einen Tacho-Kilometerstand als Ganzzahl: 254660.0 -> "254660".
 String formatKmValue(double km) =>
     km.truncateToDouble().toStringAsFixed(0);
