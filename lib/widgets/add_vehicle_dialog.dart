@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../models/vehicle.dart';
 
-/// Modal dialog for registering a new vehicle (Fahrzeug: Marke, Modell, Kennzeichen, Kilometerstand).
+/// Modal-Dialog zum Erfassen eines neuen Fahrzeugs (Marke, Modell, Kennzeichen, Kilometerstand).
 class AddVehicleDialog extends StatefulWidget {
+  /// Erstellt eine neue AddVehicleDialog-Instanz für die angegebene Fahrer-ID.
   const AddVehicleDialog({super.key, required this.driverId});
 
+  /// Die ID des Fahrers, dem das Fahrzeug zugeordnet wird
   final String driverId;
 
   @override
@@ -27,6 +29,7 @@ class _AddVehicleDialogState extends State<AddVehicleDialog> {
     super.dispose();
   }
 
+  /// Validiert die Eingaben und gibt die erstellte [Vehicle]-Instanz zurück.
   void _submit() {
     final brand = _brandController.text.trim();
     final model = _modelController.text.trim();

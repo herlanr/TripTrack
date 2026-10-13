@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// Side-by-side action row containing the live stopwatch timer badge
-/// and the toggle action button ("Fahrt Starten" / "Fahrt Beenden").
+/// Nebeneinanderliegende Aktionszeile auf dem Home-Screen mit Stoppuhr-Badge
+/// und dem Haupt-Aktionsbutton ("Fahrt Starten" / "Fahrt Beenden").
 class HomeActionRow extends StatelessWidget {
+  /// Erstellt eine neue HomeActionRow-Instanz.
   const HomeActionRow({
     super.key,
     required this.isActive,
@@ -13,16 +14,23 @@ class HomeActionRow extends StatelessWidget {
     required this.onPressed,
   });
 
+  /// Gibt an, ob aktuell eine Fahrt läuft
   final bool isActive;
+
+  /// Lade-Status bei GPS-Aktionen
   final bool isBusy;
+
+  /// Formatierte Stoppuhr-Zeit (z. B. "1h 23min 30s")
   final String elapsedFormattedTime;
+
+  /// Callback beim Klick auf den Aktionsbutton
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Live Stopwatch Badge
+        // Stoppuhr-Badge
         Container(
           height: 58,
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -63,7 +71,7 @@ class HomeActionRow extends StatelessWidget {
         ),
         const SizedBox(width: 12),
 
-        // Main Action Button ("Fahrt Starten" / "Fahrt Beenden")
+        // Aktionsbutton ("Fahrt Starten" / "Fahrt Beenden")
         Expanded(
           child: SizedBox(
             height: 58,

@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import '../models/vehicle.dart';
 import '../theme/app_theme.dart';
 
-/// Top input section on the Home screen:
-/// - Logged-in driver name badge
-/// - Vehicle selector dropdown
-/// - Start kilometerstand input
-/// - Start location (when trip is active) & live location status
+/// Eingabebereich oben auf dem Home-Dashboard:
+/// - Angemeldeter Fahrer (schreibgeschützt)
+/// - Fahrzeug-Auswahl-Dropdown
+/// - Kilometerstand-Eingabefeld
+/// - Start-Standort (wenn Fahrt aktiv) & Aktueller Standort
 class HomeInputsCard extends StatelessWidget {
+  /// Erstellt eine neue HomeInputsCard-Instanz.
   const HomeInputsCard({
     super.key,
     required this.selectedDriverName,
@@ -22,14 +23,31 @@ class HomeInputsCard extends StatelessWidget {
     required this.onVehicleChanged,
   });
 
+  /// Name des angemeldeten Fahrers
   final String selectedDriverName;
+
+  /// Liste der dem Fahrer zugeordneten Fahrzeuge
   final List<Vehicle> vehicles;
+
+  /// Das aktuell im Dropdown gewählte Fahrzeug
   final Vehicle? selectedVehicle;
+
+  /// Controller für das Kilometerstand-Feld
   final TextEditingController startKmController;
+
+  /// Aktueller Standorttext (GPS / Geocoded)
   final String currentLocationText;
+
+  /// Start-Standorttext (wenn Fahrt aktiv)
   final String? startLocationText;
+
+  /// Gibt an, ob der Start-Button aktiv sein kann
   final bool canStart;
+
+  /// Gibt an, ob aktuell eine Fahrt läuft
   final bool isActive;
+
+  /// Callback bei Änderung der Fahrzeugauswahl im Dropdown
   final ValueChanged<Vehicle?> onVehicleChanged;
 
   @override
@@ -37,7 +55,7 @@ class HomeInputsCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Logged-in Driver Badge
+        // Angemeldeter Fahrer
         InputDecorator(
           decoration: const InputDecoration(
             labelText: 'Fahrer Name',
@@ -54,7 +72,7 @@ class HomeInputsCard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Vehicle Selector Dropdown
+        // Fahrzeug-Auswahl-Dropdown
         if (vehicles.isNotEmpty) ...[
           DropdownButtonFormField<Vehicle>(
             initialValue: selectedVehicle,
@@ -75,7 +93,7 @@ class HomeInputsCard extends StatelessWidget {
           const SizedBox(height: 12),
         ],
 
-        // Kilometerstand Input
+        // Kilometerstand
         TextField(
           controller: startKmController,
           enabled: canStart,
@@ -89,7 +107,7 @@ class HomeInputsCard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Start-Standort (when trip is active)
+        // Start-Standort (wenn Fahrt aktiv)
         if (isActive && startLocationText != null) ...[
           InputDecorator(
             decoration: const InputDecoration(

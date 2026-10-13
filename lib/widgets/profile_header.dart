@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../models/driver.dart';
 
-/// Renders the driver profile header: avatar circle, full name, and date of birth.
+/// Stellt den Profilkopf für den angemeldeten Fahrer dar (Avatar-Kreis, vollständiger Name, Geburtsdatum).
 class ProfileHeader extends StatelessWidget {
+  /// Erstellt eine neue ProfileHeader-Instanz.
   const ProfileHeader({super.key, this.driver});
 
+  /// Der angemeldete Fahrer
   final Driver? driver;
 
   String _formatDate(DateTime dt) {

@@ -5,18 +5,22 @@ import '../theme/app_theme.dart';
 import '../utils/format.dart';
 import 'trip_summary_dialog.dart';
 
-/// Card widget for displaying an individual logbook entry in the Fahrtbuch list.
-/// Matches the wireframe sketch:
-/// - Top row: "Erfurt -> Weimar" (Start -> Ziel) and Duration ("30min")
-/// - Bottom row: "23 km   11.09.2026"
+/// Kartenelement zur Darstellung eines Fahrtenbuch-Eintrags in der Liste.
+/// Layout gemäß Skizze:
+/// - Oben: "Start -> Ziel" & Dauer (z. B. "30min")
+/// - Unten: "23 km   11.09.2026"
 class TripCard extends StatelessWidget {
+  /// Erstellt eine neue TripCard-Instanz.
   const TripCard({
     super.key,
     required this.trip,
     this.onDeleteTrip,
   });
 
+  /// Die darzustellende Fahrt
   final Trip trip;
+
+  /// Callback beim Löschen der Fahrt
   final ValueChanged<Trip>? onDeleteTrip;
 
   @override
@@ -50,7 +54,6 @@ class TripCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Row: "Erfurt -> Weimar" & "30min"
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -78,7 +81,6 @@ class TripCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // Bottom Row: "23 km   11.09.2026"
               Row(
                 children: [
                   Text(

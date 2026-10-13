@@ -9,10 +9,18 @@ import '../widgets/profile_header.dart';
 import '../widgets/vehicle_list_card.dart';
 import 'welcome_screen.dart';
 
-/// User profile and settings screen for the logged-in driver.
+/// Die Profil- und Einstellungsseite ("Profile") für den angemeldeten Fahrer.
+///
+/// Bietet folgende Kernfunktionen:
+/// - Anzeige des Fahrer-Avatars, vollständigen Namens und Geburtsdatums.
+/// - Auflistung aller zugeordneten Fahrzeuge inklusive Tacho-Kilometerstand.
+/// - Hinzufügen neuer Fahrzeuge über das Plus-Symbol.
+/// - Abmelden / Fahrer wechseln Schaltfläche.
 class ProfileScreen extends StatefulWidget {
+  /// Erstellt die ProfileScreen-Instanz.
   const ProfileScreen({super.key, this.driver});
 
+  /// Der angemeldete Fahrer
   final Driver? driver;
 
   @override
@@ -30,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadVehicles();
   }
 
+  /// Lädt die Fahrzeuge des Fahrers aus dem Repository.
   Future<void> _loadVehicles() async {
     final driver = widget.driver;
     if (driver != null) {
@@ -45,6 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  /// Öffnet den [AddVehicleDialog] zum Hinzufügen eines neuen Fahrzeugs.
   Future<void> _onAddVehiclePressed() async {
     final driver = widget.driver;
     if (driver == null) return;
@@ -67,6 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  /// Meldet den Fahrer ab und leitet zurück zur [WelcomeScreen].
   void _onLogoutPressed() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const WelcomeScreen()),

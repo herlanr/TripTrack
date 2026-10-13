@@ -18,13 +18,21 @@ import '../widgets/last_trip_card.dart';
 import '../widgets/trip_summary_dialog.dart';
 import 'welcome_screen.dart';
 
-/// Main Home Screen matching the revised Option A design sketch:
-/// - No chart/map container to ensure the entire screen fits without scrolling.
-/// - Modular sub-components for inputs, action row, and last trip summary.
+/// Das Haupt-Dashboard ("Fahren") der Anwendung.
+///
+/// Bietet folgende Kernfunktionen:
+/// - Anzeige des angemeldeten Fahrers und Fahrzeugauswahl.
+/// - Eingabe des aktuellen Tacho-Standes und Ermittlung der GPS-Startadresse.
+/// - Live-Stoppuhr-Anzeige und Start/Stopp-Button.
+/// - Anzeige einer Zusammenfassung der zuletzt beendeten Fahrt.
 class HomeScreen extends StatefulWidget {
+  /// Erstellt die HomeScreen-Instanz.
   const HomeScreen({super.key, this.selectedDriver, this.onTripSaved});
 
+  /// Der aktuell angemeldete Fahrer
   final Driver? selectedDriver;
+
+  /// Callback beim Speichern einer neu beendeten Fahrt
   final ValueChanged<Trip>? onTripSaved;
 
   @override
@@ -55,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchCurrentLocation();
   }
 
-  /// Loads vehicles assigned to the current driver.
+  /// Lädt die dem aktuellen Fahrer zugeordneten Fahrzeuge aus dem Repository.
   Future<void> _loadVehicles() async {
     final driver = widget.selectedDriver;
     if (driver != null) {
@@ -74,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Fetches an initial GPS fix and converts to a human-readable street address.
+  /// Ermittelt die aktuelle GPS-Position und löst diese über Reverse Geocoding in eine Straße auf.
   Future<void> _fetchCurrentLocation() async {
     final fix = await _locationTracking.requestFixWithPermission();
     if (fix != null && mounted) {
@@ -103,6 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  /// Startet den Sekunden-Timer für die Stoppuhr-Anzeige während einer aktiven Fahrt.
   void _startTimer() {
     _stopwatchTimer?.cancel();
     _stopwatchTimer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -115,11 +124,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Stoppt den Stoppuhr-Timer.
   void _stopTimer() {
     _stopwatchTimer?.cancel();
     _stopwatchTimer = null;
   }
 
+  /// Prüft die Standortberechtigung und startet die Fahrtaufzeichnung.
   Future<void> _onStartTrip() async {
     final status = await _locationTracking.checkPermissionStatus();
     if (status != LocationPermissionResult.granted) {
@@ -151,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Manual fallback if GPS fix unavailable
+    // Manueller Fallback, falls kein GPS-Signal vorhanden ist
     if (trip.startLatitude == null) {
       final String? manual = await _promptLocation(
         title: 'Kein GPS-Signal',
@@ -176,6 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Zeigt einen Hinweis-Dialog, wenn die Standortberechtigung fehlt oder GPS deaktiviert ist.
   Future<void> _showPermissionRequiredDialog(
     LocationPermissionResult status,
   ) async {
@@ -230,6 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Beendet die aktive Fahrt sofort und öffnet den Zusammenfassungs-Dialog.
   Future<void> _onStopTrip() async {
     final Trip? trip = _tripService.currentTrip;
     if (trip == null) return;
@@ -252,12 +265,13 @@ class _HomeScreenState extends State<HomeScreen> {
     await _showSummary(finished);
   }
 
+  /// Zeigt die Zusammenfassung der beendeten Fahrt an und speichert sie bei Bestätigung.
   Future<void> _showSummary(Trip trip) async {
     final bool? save = await TripSummaryDialog.show(context, trip: trip);
     if (save == true) {
       widget.onTripSaved?.call(trip);
 
-      // Update vehicle odometer upon saving trip
+      // Aktualisiert den Fahrzeug-Kilometerstand nach dem Speichern
       final vehicle = _selectedVehicle;
       if (vehicle != null) {
         final double newKm = trip.startKm + trip.distanceKm;
@@ -277,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Fordert den Benutzer zur manuellen Eingabe eines Ortsnamens auf.
   Future<String?> _promptLocation({
     required String title,
     required String message,

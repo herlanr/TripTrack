@@ -5,10 +5,12 @@ import '../theme/app_theme.dart';
 import '../utils/format.dart';
 import 'info_row.dart';
 
-/// Card at the bottom of the Home screen displaying a summary of the most recently finished trip.
+/// Karte unten auf dem Home-Dashboard zur Anzeige der zuletzt beendeten Fahrt.
 class LastTripCard extends StatelessWidget {
+  /// Erstellt eine neue LastTripCard-Instanz.
   const LastTripCard({super.key, this.lastTrip});
 
+  /// Die zuletzt beendete Fahrt in dieser Sitzung
   final Trip? lastTrip;
 
   @override

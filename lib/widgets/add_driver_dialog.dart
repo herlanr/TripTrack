@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../models/driver.dart';
 
-/// Modal dialog for registering a new driver profile (Vorname, Name, Geburtsdatum).
+/// Modal-Dialog zum Anlegen eines neuen Fahrer-Profils (Vorname, Name, Geburtsdatum).
 class AddDriverDialog extends StatefulWidget {
+  /// Erstellt die AddDriverDialog-Instanz.
   const AddDriverDialog({super.key});
 
   @override
@@ -22,6 +23,7 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
     super.dispose();
   }
 
+  /// Öffnet den Datumswähler (DatePicker) zur Auswahl des Geburtsdatums.
   Future<void> _pickDateOfBirth() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -34,6 +36,7 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
     }
   }
 
+  /// Validiert die Eingaben und gibt die erstellte [Driver]-Instanz zurück.
   void _submit() {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();

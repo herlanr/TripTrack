@@ -6,12 +6,15 @@ import '../theme/app_theme.dart';
 import '../widgets/export_dialog.dart';
 import '../widgets/trip_card.dart';
 
-/// Screen displaying the history of all completed Fahrtenbuch entries.
-/// Redesigned matching the wireframe sketch:
-/// - Title: "[Driver Name] Fahrtbuch" + Share/Export icon
-/// - Search Bar + Filter button
-/// - Trip Cards: "Start -> Ziel", distance, date, duration
+/// Die Fahrtenbuch-Übersichtsseite ("Fahrtbuch") der Anwendung.
+///
+/// Bietet folgende Kernfunktionen:
+/// - Anzeige aller gespeicherten Fahrtenbuch-Einträge.
+/// - Suchleiste zum Filtern nach Orten oder Fahrern.
+/// - Anstoß des CSV-/PDF-Exports über die Teilen-Schaltfläche in der AppBar.
+/// - Detailansicht und Löschen von Einträgen per Klick auf eine Fahrt-Karte.
 class FahrtbuchScreen extends StatefulWidget {
+  /// Erstellt eine neue FahrtbuchScreen-Instanz.
   const FahrtbuchScreen({
     super.key,
     this.driver,
@@ -19,8 +22,13 @@ class FahrtbuchScreen extends StatefulWidget {
     this.onDeleteTrip,
   });
 
+  /// Der angemeldete Fahrer
   final Driver? driver;
+
+  /// Liste aller gespeicherten Fahrten
   final List<Trip> savedTrips;
+
+  /// Callback zum Löschen einer Fahrt
   final ValueChanged<Trip>? onDeleteTrip;
 
   @override
@@ -37,6 +45,7 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     super.dispose();
   }
 
+  /// Filtert die Fahrtenliste basierend auf der aktuellen Sucheingabe.
   List<Trip> get _filteredTrips {
     if (_searchQuery.isEmpty) return widget.savedTrips;
     final query = _searchQuery.toLowerCase();
@@ -50,6 +59,7 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     }).toList();
   }
 
+  /// Öffnet den Export-Pop-Up-Dialog.
   void _openExportDialog() {
     ExportDialog.show(
       context,
@@ -87,7 +97,7 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Column(
             children: [
-              // Search Bar & Filter Button matching sketch
+              // Suchleiste & Filter-Button
               Row(
                 children: [
                   Expanded(
@@ -131,7 +141,7 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Trip List
+              // Fahrtenliste
               Expanded(
                 child: trips.isEmpty
                     ? Center(

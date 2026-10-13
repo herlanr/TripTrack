@@ -6,11 +6,12 @@ import '../utils/format.dart';
 import 'info_row.dart';
 import 'route_list.dart';
 
-/// Material 3 dialog showing the trip summary.
-/// Supports two modes:
-/// - `isReadOnly == false`: Freshly stopped trip from Home (Verwerfen / Speichern).
-/// - `isReadOnly == true`: Saved trip view from Fahrtbuch (Upper-right X close button, Fahrt löschen).
+/// Material 3 Dialog zur Anzeige der Fahrt-Zusammenfassung.
+/// Unterstützt zwei Modi:
+/// - `isReadOnly == false`: Frisch beendete Fahrt auf Home (Verwerfen / Speichern).
+/// - `isReadOnly == true`: Gespeicherte Fahrt im Fahrtbuch (Schließen-X oben rechts, Fahrt löschen unten).
 class TripSummaryDialog extends StatelessWidget {
+  /// Erstellt eine neue TripSummaryDialog-Instanz.
   const TripSummaryDialog({
     super.key,
     required this.trip,
@@ -18,11 +19,16 @@ class TripSummaryDialog extends StatelessWidget {
     this.onDelete,
   });
 
+  /// Die darzustellende Fahrt
   final Trip trip;
+
+  /// Modus: Schreibgeschützt im Fahrtbuch oder neu zu speichern
   final bool isReadOnly;
+
+  /// Callback beim Bestätigen des Löschens
   final VoidCallback? onDelete;
 
-  /// Opens the summary dialog.
+  /// Öffnet den Zusammenfassungs-Dialog.
   static Future<bool?> show(
     BuildContext context, {
     required Trip trip,
@@ -91,7 +97,6 @@ class TripSummaryDialog extends StatelessWidget {
               ),
             ),
           ),
-          // Upper-Right Close (X) Button matching normal windows / Material 3 dialogs
           IconButton(
             icon: const Icon(Icons.close_rounded, color: Colors.grey, size: 24),
             tooltip: 'Schließen',
@@ -106,7 +111,7 @@ class TripSummaryDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Top Metric Cards (Strecke & Dauer)
+              // Strecke & Dauer Badges
               Row(
                 children: [
                   Expanded(
@@ -128,7 +133,7 @@ class TripSummaryDialog extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Details List
+              // Fahrtdetails
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -167,7 +172,7 @@ class TripSummaryDialog extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Route Points Section
+              // Routenverlauf
               const Text(
                 'Routenverlauf (GPS-Punkte)',
                 style: TextStyle(
@@ -184,7 +189,6 @@ class TripSummaryDialog extends StatelessWidget {
       ),
       actions: [
         if (!isReadOnly) ...[
-          // New Finished Trip Actions (Home Screen)
           Row(
             children: [
               Expanded(
@@ -224,7 +228,6 @@ class TripSummaryDialog extends StatelessWidget {
             ],
           ),
         ] else ...[
-          // Saved Trip View Actions (Fahrtbuch Screen)
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(

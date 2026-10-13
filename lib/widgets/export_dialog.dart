@@ -6,21 +6,22 @@ import '../services/export_service.dart';
 import '../services/vehicle_repository.dart';
 import '../theme/app_theme.dart';
 
-/// Export Pop Up matching the wireframe sketch:
-/// - Title: "Bitte Dateiformat auswählen"
-/// - Radio format selection: .csv (Excel Data) or pdf (Printable Document)
-/// - Vehicle Filter dropdown: "Auto auswählen"
-/// - Buttons: "Abbrechen" (Red) and "Export" (Green)
+/// Modal-Dialog zur Auswahl des Exportformats (.csv oder pdf) und Fahrzeugfilters.
 class ExportDialog extends StatefulWidget {
+  /// Erstellt eine neue ExportDialog-Instanz.
   const ExportDialog({
     super.key,
     required this.trips,
     this.driverId,
   });
 
+  /// Die zu exportierenden Fahrten
   final List<Trip> trips;
+
+  /// Optionale Fahrer-ID zur Fahrzeugabfrage
   final String? driverId;
 
+  /// Hilfsmethode zum Öffnen des Export-Dialogs.
   static Future<void> show(
     BuildContext context, {
     required List<Trip> trips,
@@ -41,7 +42,7 @@ class ExportDialog extends StatefulWidget {
 
 class _ExportDialogState extends State<ExportDialog> {
   final VehicleRepository _vehicleRepository = VehicleRepository();
-  String _selectedFormat = 'csv'; // default: .csv (Excel)
+  String _selectedFormat = 'csv'; // Standard: .csv (Excel/Tabelle)
   Vehicle? _selectedVehicle;
   List<Vehicle> _vehicles = [];
   bool _exporting = false;
@@ -64,6 +65,7 @@ class _ExportDialogState extends State<ExportDialog> {
     }
   }
 
+  /// Stößt den Export über den [ExportService] an.
   Future<void> _onExportPressed() async {
     if (widget.trips.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +120,7 @@ class _ExportDialogState extends State<ExportDialog> {
           children: [
             const SizedBox(height: 8),
 
-            // Format Selection Radio Options (.csv or pdf)
+            // Formatauswahl (.csv oder pdf)
             RadioGroup<String>(
               groupValue: _selectedFormat,
               onChanged: (String? val) {
@@ -144,7 +146,7 @@ class _ExportDialogState extends State<ExportDialog> {
 
             const SizedBox(height: 16),
 
-            // Auto auswählen (Vehicle Filter Dropdown)
+            // Fahrzeugauswahl (Filter)
             DropdownButtonFormField<Vehicle?>(
               initialValue: _selectedVehicle,
               decoration: const InputDecoration(
