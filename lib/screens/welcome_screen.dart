@@ -128,6 +128,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if (confirm == true) {
       await _driverRepository.deleteDriver(driver.id);
+      await _vehicleRepository.deleteVehiclesForDriver(driver.id);
       await _loadDrivers();
       _showSnack('Profil gelöscht.');
     }

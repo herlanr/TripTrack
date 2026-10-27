@@ -11,6 +11,7 @@ LocationPoint _$LocationPointFromJson(Map<String, dynamic> json) =>
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       timestamp: DateTime.parse(json['timestamp'] as String),
+      addressText: json['addressText'] as String?,
     );
 
 Map<String, dynamic> _$LocationPointToJson(LocationPoint instance) =>
@@ -18,4 +19,5 @@ Map<String, dynamic> _$LocationPointToJson(LocationPoint instance) =>
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'timestamp': instance.timestamp.toIso8601String(),
+      if (instance.addressText != null) 'addressText': instance.addressText,
     };

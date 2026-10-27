@@ -1,11 +1,16 @@
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/driver.dart';
 
 /// Kapselt die lokale Speicherung von Fahrer-Profilen in [SharedPreferences].
+///
+/// Liest und schreibt direkt in [SharedPreferences] ohne Instanz-Cache,
+/// um Synchronisationsprobleme zwischen verschiedenen Screen-Instanzen zu vermeiden.
 class DriverRepository {
-
+  /// Maximale Anzahl erlaubter Fahrer-Profile
   static const int maxProfiles = 4;
 
   /// Schlüssel für die SharedPreferences-Speicherung
@@ -19,69 +24,86 @@ class DriverRepository {
     dateOfBirth: DateTime(1990, 1, 1),
   );
 
-  final List<Driver> _inMemoryDrivers = [];
-  bool _initialized = false;
-
-  /// Lädt alle gespeicherten Fahrer aus dem lokalen Speicher.
-  /// Erstellt automatisch das Test-Fahrerprofil, falls der Speicher leer ist.
-  Future<List<Driver>> getDrivers() async {
-    if (_initialized) return List.unmodifiable(_inMemoryDrivers);
-
+  /// Beschreibung: Liest alle Fahrer-Profile direkt aus dem lokalen Speicher.
+  /// Autor: @herlanr
+  /// Eingabe: Keine
+  /// Ausgabe: Liste von Fahrer-Instanzen
+  Future<List<Driver>> _loadAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? jsonString = prefs.getString(_prefsKey);
-      if (jsonString != null && jsonString.isNotEmpty) {
-        final List<dynamic> decoded = jsonDecode(jsonString) as List<dynamic>;
-        _inMemoryDrivers.clear();
-        _inMemoryDrivers.addAll(
-          decoded.map((e) => Driver.fromJson(e as Map<String, dynamic>)),
-        );
+      if (jsonString == null || jsonString.isEmpty) return [];
+
+      final decoded = jsonDecode(jsonString) as List<dynamic>;
+      return decoded
+          .map((e) => Driver.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Fehler beim Laden der Fahrer-Profile: $e');
       }
-    } catch (_) {
-      // Rückfalloption bei Speicherfehler
+      return [];
     }
-
-    // Standardmäßigen Test-Fahrer anlegen, falls noch keine Profile existieren
-    if (_inMemoryDrivers.isEmpty) {
-      _inMemoryDrivers.add(defaultTestDriver);
-      await _saveToDisk();
-    }
-
-    _initialized = true;
-    return List.unmodifiable(_inMemoryDrivers);
   }
 
-  /// Fügt ein neues Fahrer-Profil hinzu. Wirft einen [StateError], wenn das Limit (4) erreicht ist.
-  Future<void> addDriver(Driver driver) async {
-    await getDrivers(); // Sicherstellen, dass die Daten geladen sind
+  /// Beschreibung: Schreibt die komplette Fahrerliste als JSON-String in den Speicher.
+  /// Autor: @herlanr
+  /// Eingabe: drivers (List of Driver)
+  /// Ausgabe: Keine
+  Future<void> _saveAll(List<Driver> drivers) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString =
+          jsonEncode(drivers.map((d) => d.toJson()).toList());
+      await prefs.setString(_prefsKey, jsonString);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Fehler beim Speichern der Fahrer-Profile: $e');
+      }
+    }
+  }
 
-    if (_inMemoryDrivers.length >= maxProfiles) {
+  /// Beschreibung: Lädt alle gespeicherten Fahrer aus dem lokalen Speicher.
+  /// Erstellt automatisch das Test-Fahrerprofil, falls der Speicher komplett leer ist.
+  /// Autor: @herlanr
+  /// Eingabe: Keine
+  /// Ausgabe: Liste von Fahrer-Instanzen
+  Future<List<Driver>> getDrivers() async {
+    final drivers = await _loadAll();
+
+    // Standardmäßigen Test-Fahrer anlegen, falls noch gar keine Profile existieren
+    if (drivers.isEmpty) {
+      drivers.add(defaultTestDriver);
+      await _saveAll(drivers);
+    }
+
+    return drivers;
+  }
+
+  /// Beschreibung: Fügt ein neues Fahrer-Profil hinzu. Wirft einen [StateError], wenn das Limit (4) erreicht ist.
+  /// Autor: @herlanr
+  /// Eingabe: driver ([Driver])
+  /// Ausgabe: Keine
+  Future<void> addDriver(Driver driver) async {
+    final drivers = await _loadAll();
+
+    if (drivers.length >= maxProfiles) {
       throw StateError(
         'Maximale Anzahl von $maxProfiles Fahrer-Profilen erreicht. Bitte zuerst ein Profil löschen.',
       );
     }
 
-    _inMemoryDrivers.add(driver);
-    await _saveToDisk();
+    drivers.add(driver);
+    await _saveAll(drivers);
   }
 
-  /// Löscht ein Fahrer-Profil anhand seiner ID.
+  /// Beschreibung: Löscht ein Fahrer-Profil anhand seiner ID.
+  /// Autor: @herlanr
+  /// Eingabe: driverId (String)
+  /// Ausgabe: Keine
   Future<void> deleteDriver(String driverId) async {
-    await getDrivers();
-    _inMemoryDrivers.removeWhere((d) => d.id == driverId);
-    await _saveToDisk();
-  }
-
-  /// Speichert die aktuelle Fahrerliste als JSON-String auf der Festplatte.
-  Future<void> _saveToDisk() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = jsonEncode(
-        _inMemoryDrivers.map((d) => d.toJson()).toList(),
-      );
-      await prefs.setString(_prefsKey, jsonString);
-    } catch (_) {
-      // Fehler beim Speichern ignorieren
-    }
+    final drivers = await _loadAll();
+    drivers.removeWhere((d) => d.id == driverId);
+    await _saveAll(drivers);
   }
 }

@@ -35,10 +35,18 @@ class RouteList extends StatelessWidget {
   }
 
   List<_RouteEntry> _buildEntries(Trip trip) {
+    String startLabel = trip.startLocationText ?? '—';
+    if ((trip.startLocationText == null || trip.startLocationText!.isEmpty) &&
+        trip.startLatitude != null &&
+        trip.startLongitude != null) {
+      startLabel =
+          '${trip.startLatitude!.toStringAsFixed(6)}, ${trip.startLongitude!.toStringAsFixed(6)}';
+    }
+
     final List<_RouteEntry> entries = [
       _RouteEntry(
         time: trip.startTime,
-        label: trip.startLocationText ?? '—',
+        label: startLabel,
         isEndpoint: true,
       ),
       for (final point in trip.routePoints)
@@ -51,10 +59,17 @@ class RouteList extends StatelessWidget {
 
     final DateTime? endTime = trip.endTime;
     if (endTime != null) {
+      String endLabel = trip.endLocationText ?? '—';
+      if ((trip.endLocationText == null || trip.endLocationText!.isEmpty) &&
+          trip.endLatitude != null &&
+          trip.endLongitude != null) {
+        endLabel =
+            '${trip.endLatitude!.toStringAsFixed(6)}, ${trip.endLongitude!.toStringAsFixed(6)}';
+      }
       entries.add(
         _RouteEntry(
           time: endTime,
-          label: trip.endLocationText ?? '—',
+          label: endLabel,
           isEndpoint: true,
         ),
       );

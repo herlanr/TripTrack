@@ -11,12 +11,12 @@ Diese Datei enthält alle identifizierten Fehler (Bugs), Formular-Korrekturen, U
   - *Lösung*: `SingleChildScrollView` und flexibles Tastatur-Padding (`MediaQuery.of(context).viewInsets.bottom`) in Dialogen sicherstellen.
   - *Verantwortlich*: Nils
 
-- [ ] **Routenverlauf zeigt nicht alle GPS-Punkte**
+- [x] **Routenverlauf zeigt nicht alle GPS-Punkte**
   - *Problem*: In der `RouteList` / `TripSummaryDialog` werden Zwischenpunkte der Fahrt gefilterte oder unvollständig angezeigt.
   - *Lösung*: Alle erfassten GPS-Punkte chronologisch und vollständig in der Zeitleiste auflisten.
   - *Verantwortlich*: Herlan
 
-- [ ] **Automatische Aktualisierung des Kilometerstands**
+- [x] **Automatische Aktualisierung des Kilometerstands**
   - *Problem*: Der Kilometerstand des Fahrzeugs (`Vehicle.currentKm`) muss nach dem Speichern einer Fahrt verlässlich im `VehicleRepository` aktualisiert werden.
   - *Verantwortlich*: Herlan
 
@@ -33,7 +33,7 @@ Diese Datei enthält alle identifizierten Fehler (Bugs), Formular-Korrekturen, U
   - *Ziel*: Erweiterte Optionen beim Beenden einer Fahrt (z. B. sofortige Schnellspeicherung oder Bestätigungsdialog).
   - *Verantwortlich*: Herlan
 
-- [ ] **Zwei separate Knöpfe im Fahrtbuch: Datumsfilter & Sortierung**
+- [x] **Zwei separate Knöpfe im Fahrtbuch: Datumsfilter & Sortierung**
   - *Ziel*: Im `FahrtbuchScreen` neben der Suchleiste zwei dedizierte Schaltflächen bereitstellen:
     1. 📅 **Datumsfilter-Button**: Öffnet ein Kalender-Pop-Up zur Auswahl von Start- und Enddatum.
     2. 🔀 **Sortierungs-Button**: Bietet Sortieroptionen (Neueste zuerst, Älteste zuerst, Längste Strecke).

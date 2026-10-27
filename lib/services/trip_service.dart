@@ -3,6 +3,7 @@ import 'dart:async';
 import '../models/location_point.dart';
 import '../models/trip.dart';
 import '../models/trip_phase.dart';
+import '../utils/geo.dart';
 import '../utils/geocoding_helper.dart';
 import 'location_tracking_service.dart';
 
@@ -10,7 +11,7 @@ import 'location_tracking_service.dart';
 ///
 /// Verwaltet den gesamten Lebenszyklus einer Fahrt:
 /// - Starten und sofortiges Beenden von Fahrten.
-/// - Erfassen von GPS-Routenpunkten in 3-Minuten-Intervallen.
+/// - Erfassen von GPS-Routenpunkten in kontinuierlichen Intervallen (ab 5 Sekunden & 5m Distanz).
 /// - Automatische Adressauflösung für Start- und Zielort über GeocodingHelper.
 class TripService {
   /// Erstellt eine neue TripService-Instanz mit dem übergebenen LocationTrackingService.
@@ -18,8 +19,8 @@ class TripService {
 
   final LocationTrackingService _locationService;
 
-  /// Zeitintervall für das Speichern von Zwischen-GPS-Punkten auf der Route (3 Minuten).
-  static const Duration minPointInterval = Duration(minutes: 3);
+  /// Zeitintervall für das Speichern von Zwischen-GPS-Punkten auf der Route (5 Sekunden).
+  static const Duration minPointInterval = Duration(seconds: 5);
 
   /// Maximale Anzahl an speicherbaren GPS-Routenpunkten pro Fahrt.
   static const int maxPoints = 500;
@@ -148,10 +149,36 @@ class TripService {
     if (trip.routePoints.length >= maxPoints) return;
 
     final LocationPoint? last = trip.routePoints.lastOrNull;
-    if (last == null ||
-        point.timestamp.difference(last.timestamp) >= minPointInterval) {
+    final bool timeElapsed = last == null ||
+        point.timestamp.difference(last.timestamp) >= minPointInterval;
+    final bool moved = last == null ||
+        haversineDistanceKm(
+              latitude1: last.latitude,
+              longitude1: last.longitude,
+              latitude2: point.latitude,
+              longitude2: point.longitude,
+            ) >=
+            0.005; // Mindestens 5 Meter bewegt
+
+    if (timeElapsed && moved) {
       trip.routePoints.add(point);
       _pointCountController.add(trip.routePoints.length);
+
+      // Adresse für den Zwischenpunkt im Hintergrund auflösen
+      GeocodingHelper.getAddressFromCoordinates(
+        point.latitude,
+        point.longitude,
+      ).then((address) {
+        final index = trip.routePoints.indexOf(point);
+        if (index != -1) {
+          trip.routePoints[index] = LocationPoint(
+            latitude: point.latitude,
+            longitude: point.longitude,
+            timestamp: point.timestamp,
+            addressText: address,
+          );
+        }
+      }).catchError((_) {});
     }
   }
 }

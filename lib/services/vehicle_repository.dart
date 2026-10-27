@@ -1,13 +1,16 @@
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/vehicle.dart';
 
-/// REPOSITORY PATTERN IMPLEMENTATION (Fahrzeug-Datenhaltung)
-///
 /// Kapselt die lokale Speicherung von Fahrzeugen in [SharedPreferences].
-/// Bietet Methoden zum Abfragen von Fahrzeugen nach Fahrer-ID (`getVehiclesForDriver`),
-/// Hinzufügen von Fahrzeugen (`addVehicle`) und Aktualisieren des Tacho-Standes (`updateVehicleKm`).
+///
+/// Alle Fahrzeuge liegen als eine JSON-Liste unter einem einzigen Schlüssel.
+/// Jede Methode liest die Liste, ändert sie und schreibt sie zurück.
+/// Es gibt bewusst keinen Zwischenspeicher: So sehen alle Instanzen
+/// (z. B. in verschiedenen Screens) immer dieselben Daten.
 class VehicleRepository {
   static const String _prefsKey = 'triptrack_vehicles_v1';
 
@@ -21,93 +24,102 @@ class VehicleRepository {
     currentKm: 254660.0,
   );
 
-  final List<Vehicle> _inMemoryVehicles = [];
-  bool _initialized = false;
-
-  Future<List<Vehicle>> _loadAllVehicles() async {
-    if (_initialized) return _inMemoryVehicles;
-
+  /// Beschreibung: Liest alle Fahrzeuge direkt aus dem lokalen Speicher.
+  /// Autor: @herlanr
+  /// Eingabe: Keine
+  /// Ausgabe: Liste von Fahrzeug-Instanzen
+  Future<List<Vehicle>> _loadAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? jsonString = prefs.getString(_prefsKey);
-      if (jsonString != null && jsonString.isNotEmpty) {
-        final List<dynamic> decoded = jsonDecode(jsonString) as List<dynamic>;
-        _inMemoryVehicles.clear();
-        _inMemoryVehicles.addAll(
-          decoded.map((e) => Vehicle.fromJson(e as Map<String, dynamic>)),
-        );
+      if (jsonString == null || jsonString.isEmpty) return [];
+
+      final decoded = jsonDecode(jsonString) as List<dynamic>;
+      return decoded
+          .map((e) => Vehicle.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Fehler beim Laden der Fahrzeuge: $e');
       }
-    } catch (_) {
-      // Fehler beim Speichern ignorieren
-    }
-
-    // Standardmäßiges Test-Fahrzeug anlegen, falls noch keine Fahrzeuge existieren
-    if (_inMemoryVehicles.isEmpty) {
-      _inMemoryVehicles.add(defaultTestVehicle);
-      await _saveToDisk();
-    }
-
-    _initialized = true;
-    return _inMemoryVehicles;
-  }
-
-  /// Gibt alle Fahrzeuge zurück, die einer bestimmten Fahrer-ID zugeordnet sind.
-  /// Falls der Fahrer noch kein Fahrzeug hat, wird ihm automatisch ein Standard-Fahrzeug zugewiesen.
-  Future<List<Vehicle>> getVehiclesForDriver(String driverId) async {
-    final all = await _loadAllVehicles();
-    final driverVehicles = all.where((v) => v.driverId == driverId).toList();
-
-    if (driverVehicles.isEmpty) {
-      final newVehicle = Vehicle(
-        id: 'v_${DateTime.now().millisecondsSinceEpoch}',
-        driverId: driverId,
-        brand: 'Volkswagen',
-        model: 'Golf VIII',
-        licensePlate: 'EF-TT 2026',
-        currentKm: 254660.0,
-      );
-      _inMemoryVehicles.add(newVehicle);
-      await _saveToDisk();
-      return [newVehicle];
-    }
-
-    return driverVehicles;
-  }
-
-  /// Fügt ein neues Fahrzeug hinzu und speichert es lokal.
-  Future<void> addVehicle(Vehicle vehicle) async {
-    await _loadAllVehicles();
-    _inMemoryVehicles.add(vehicle);
-    await _saveToDisk();
-  }
-
-  /// Aktualisiert den aktuellen Kilometerstand eines Fahrzeugs.
-  Future<void> updateVehicleKm(String vehicleId, double newKm) async {
-    await _loadAllVehicles();
-    final index = _inMemoryVehicles.indexWhere((v) => v.id == vehicleId);
-    if (index != -1) {
-      _inMemoryVehicles[index] =
-          _inMemoryVehicles[index].copyWith(currentKm: newKm);
-      await _saveToDisk();
+      return [];
     }
   }
 
-  /// Löscht ein Fahrzeug anhand seiner ID.
-  Future<void> deleteVehicle(String vehicleId) async {
-    await _loadAllVehicles();
-    _inMemoryVehicles.removeWhere((v) => v.id == vehicleId);
-    await _saveToDisk();
-  }
-
-  Future<void> _saveToDisk() async {
+  /// Beschreibung: Schreibt die komplette Fahrzeugliste als JSON-String in den Speicher.
+  /// Autor: @herlanr
+  /// Eingabe: vehicles (List of Vehicle)
+  /// Ausgabe: Keine
+  Future<void> _saveAll(List<Vehicle> vehicles) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final jsonString = jsonEncode(
-        _inMemoryVehicles.map((v) => v.toJson()).toList(),
-      );
+      final jsonString =
+          jsonEncode(vehicles.map((v) => v.toJson()).toList());
       await prefs.setString(_prefsKey, jsonString);
-    } catch (_) {
-      // Fehler beim Speichern ignorieren
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Fehler beim Speichern der Fahrzeuge: $e');
+      }
     }
+  }
+
+  /// Beschreibung: Gibt alle Fahrzeuge zurück, die zu einem bestimmten Fahrer gehören.
+  /// Erstellt automatisch das Test-Fahrzeug (Golf VIII), falls der Test-Fahrer noch kein Fahrzeug hat.
+  /// Autor: @herlanr
+  /// Eingabe: driverId (String)
+  /// Ausgabe: Liste von Fahrzeug-Instanzen
+  Future<List<Vehicle>> getVehiclesForDriver(String driverId) async {
+    final all = await _loadAll();
+
+    // Standardmäßiges Test-Fahrzeug anlegen, falls für den Test-Fahrer noch kein Fahrzeug existiert
+    if (driverId == defaultTestVehicle.driverId &&
+        !all.any((v) => v.driverId == driverId)) {
+      all.add(defaultTestVehicle);
+      await _saveAll(all);
+    }
+
+    return all.where((v) => v.driverId == driverId).toList();
+  }
+
+  /// Beschreibung: Fügt ein neues Fahrzeug hinzu und speichert es lokal.
+  /// Autor: @herlanr
+  /// Eingabe: vehicle ([Vehicle])
+  /// Ausgabe: Keine
+  Future<void> addVehicle(Vehicle vehicle) async {
+    final all = await _loadAll();
+    all.add(vehicle);
+    await _saveAll(all);
+  }
+
+  /// Beschreibung: Aktualisiert den Tacho-Stand eines bestimmten Fahrzeugs.
+  /// Autor: @herlanr
+  /// Eingabe: vehicleId (String), newKm (double)
+  /// Ausgabe: Keine
+  Future<void> updateVehicleKm(String vehicleId, double newKm) async {
+    final all = await _loadAll();
+    final index = all.indexWhere((v) => v.id == vehicleId);
+    if (index == -1) return;
+    all[index] = all[index].copyWith(currentKm: newKm);
+    await _saveAll(all);
+  }
+
+  /// Beschreibung: Löscht ein Fahrzeug anhand seiner ID.
+  /// Autor: @herlanr
+  /// Eingabe: vehicleId (String)
+  /// Ausgabe: Keine
+  Future<void> deleteVehicle(String vehicleId) async {
+    final all = await _loadAll();
+    all.removeWhere((v) => v.id == vehicleId);
+    await _saveAll(all);
+  }
+
+  /// Beschreibung: Löscht alle Fahrzeuge eines bestimmten Fahrers.
+  /// Autor: @herlanr
+  /// Eingabe: driverId (String)
+  /// Ausgabe: Keine
+  Future<void> deleteVehiclesForDriver(String driverId) async {
+    final all = await _loadAll();
+    all.removeWhere((v) => v.driverId == driverId);
+    await _saveAll(all);
   }
 }

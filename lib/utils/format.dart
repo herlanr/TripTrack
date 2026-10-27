@@ -11,6 +11,12 @@ String formatDateTime(DateTime dateTime) {
       '${two(dateTime.hour)}:${two(dateTime.minute)}';
 }
 
+/// Formatiert das Datum im Format "15.09.2026".
+String formatDate(DateTime dateTime) {
+  String two(int value) => value.toString().padLeft(2, '0');
+  return '${two(dateTime.day)}.${two(dateTime.month)}.${dateTime.year}';
+}
+
 /// Formatiert die Uhrzeit im Format "14:00".
 String formatTime(DateTime dateTime) {
   String two(int value) => value.toString().padLeft(2, '0');

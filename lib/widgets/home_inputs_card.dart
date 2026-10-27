@@ -6,7 +6,7 @@ import '../theme/app_theme.dart';
 /// Eingabebereich oben auf dem Home-Dashboard:
 /// - Angemeldeter Fahrer (schreibgeschützt)
 /// - Fahrzeug-Auswahl-Dropdown
-/// - Kilometerstand-Eingabefeld
+/// - Kilometerstand (schreibgeschützt mit Bearbeiten-Button rechts)
 /// - Start-Standort (wenn Fahrt aktiv) & Aktueller Standort
 class HomeInputsCard extends StatelessWidget {
   /// Erstellt eine neue HomeInputsCard-Instanz.
@@ -21,6 +21,7 @@ class HomeInputsCard extends StatelessWidget {
     required this.canStart,
     required this.isActive,
     required this.onVehicleChanged,
+    required this.onEditKmPressed,
   });
 
   /// Name des angemeldeten Fahrers
@@ -49,6 +50,9 @@ class HomeInputsCard extends StatelessWidget {
 
   /// Callback bei Änderung der Fahrzeugauswahl im Dropdown
   final ValueChanged<Vehicle?> onVehicleChanged;
+
+  /// Callback beim Klick auf den Editieren-Button beim Kilometerstand
+  final VoidCallback onEditKmPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -93,16 +97,37 @@ class HomeInputsCard extends StatelessWidget {
           const SizedBox(height: 12),
         ],
 
-        // Kilometerstand
+        // Kilometerstand (schreibgeschützt, Bearbeiten über Stift-Icon rechts)
         TextField(
           controller: startKmController,
-          enabled: canStart,
-          keyboardType:
-              const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
+          readOnly: true,
+          decoration: InputDecoration(
             labelText: 'Kilometerstand',
-            prefixIcon: Icon(Icons.speed_outlined),
-            suffixText: 'km',
+            prefixIcon: const Icon(Icons.speed_outlined),
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'km',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (canStart && selectedVehicle != null)
+                  IconButton(
+                    icon: const Icon(
+                      Icons.edit_rounded,
+                      color: AppTheme.primaryGreen,
+                      size: 20,
+                    ),
+                    tooltip: 'Kilometerstand anpassen',
+                    onPressed: onEditKmPressed,
+                  ),
+                const SizedBox(width: 8),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 12),

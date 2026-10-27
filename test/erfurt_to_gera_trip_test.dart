@@ -113,5 +113,46 @@ void main() {
       expect(loadedTrip.allGpsPoints().length, equals(allPoints.length));
       expect(loadedTrip.distanceKm, closeTo(calculatedDistance, 0.01));
     });
+
+    test('RouteList and Trip preserve all intermediate GPS points chronologically', () {
+      final startTime = DateTime(2026, 9, 15, 14, 0);
+      final intermediateGpsPoints = <LocationPoint>[
+        LocationPoint(
+          latitude: 50.9612,
+          longitude: 11.1120,
+          timestamp: startTime.add(const Duration(seconds: 10)),
+        ),
+        LocationPoint(
+          latitude: 50.9580,
+          longitude: 11.2310,
+          timestamp: startTime.add(const Duration(seconds: 20)),
+        ),
+        LocationPoint(
+          latitude: 50.9520,
+          longitude: 11.3320,
+          timestamp: startTime.add(const Duration(seconds: 30)),
+        ),
+      ];
+
+      final trip = Trip(
+        driverName: 'Herlan Rocha',
+        startKm: 100.0,
+        startTime: startTime,
+        startLatitude: 50.9725,
+        startLongitude: 11.0384,
+        startLocationText: 'Erfurt Hauptbahnhof',
+        endTime: startTime.add(const Duration(seconds: 40)),
+        endLatitude: 50.8812,
+        endLongitude: 12.0818,
+        endLocationText: 'Gera Hauptbahnhof',
+        routePoints: intermediateGpsPoints,
+      );
+
+      expect(trip.routePoints.length, equals(3));
+      final allPoints = trip.allGpsPoints();
+      expect(allPoints.length, equals(5)); // Start + 3 intermediate + End
+      expect(allPoints.first.latitude, equals(50.9725));
+      expect(allPoints.last.latitude, equals(50.8812));
+    });
   });
 }

@@ -7,6 +7,7 @@ import '../models/trip.dart';
 import '../models/trip_phase.dart';
 import '../models/vehicle.dart';
 import '../services/location_tracking_service.dart';
+import '../services/trip_repository.dart';
 import '../services/trip_service.dart';
 import '../services/vehicle_repository.dart';
 import '../theme/app_theme.dart';
@@ -43,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _startKmController = TextEditingController();
   final _locationTracking = LocationTrackingService();
   final VehicleRepository _vehicleRepository = VehicleRepository();
+  final TripRepository _tripRepository = TripRepository();
   late final TripService _tripService = TripService(_locationTracking);
 
   List<Vehicle> _vehicles = [];
@@ -63,19 +65,31 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchCurrentLocation();
   }
 
-  /// Lädt die dem aktuellen Fahrer zugeordneten Fahrzeuge aus dem Repository.
+  /// Lädt die dem aktuellen Fahrer zugeordneten Fahrzeuge und letzten Fahrten aus dem Repository.
   Future<void> _loadVehicles() async {
     final driver = widget.selectedDriver;
     if (driver != null) {
       final vehicles =
           await _vehicleRepository.getVehiclesForDriver(driver.id);
+      final trips = await _tripRepository.getTrips();
+      final driverTrips = trips
+          .where((t) => t.driverId == driver.id || t.driverName == driver.fullName)
+          .toList();
+
       if (mounted) {
         setState(() {
           _vehicles = vehicles;
           if (vehicles.isNotEmpty) {
-            _selectedVehicle = vehicles.first;
+            final currentId = _selectedVehicle?.id;
+            _selectedVehicle = vehicles.firstWhere(
+              (v) => v.id == currentId,
+              orElse: () => vehicles.first,
+            );
             _startKmController.text =
                 formatKmValue(_selectedVehicle!.currentKm);
+          }
+          if (_lastTrip == null && driverTrips.isNotEmpty) {
+            _lastTrip = driverTrips.first;
           }
         });
       }
@@ -313,7 +327,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 autofocus: true,
                 decoration: const InputDecoration(
                   labelText: 'Ort',
-                  hintText: 'z. B. Erfurt',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -335,6 +348,87 @@ class _HomeScreenState extends State<HomeScreen> {
       return (result == null || result.isEmpty) ? null : result;
     } finally {
       controller.dispose();
+    }
+  }
+
+  /// Öffnet einen Pop-Up-Dialog zur manuellen Anpassung des Kilometerstands.
+  Future<void> _onEditKmPressed() async {
+    final vehicle = _selectedVehicle;
+    if (vehicle == null) return;
+
+    final controller = TextEditingController(
+      text: formatKmValue(vehicle.currentKm),
+    );
+
+    final double? newKm = await showDialog<double>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.edit_rounded, color: AppTheme.primaryGreen),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Kilometerstand anpassen',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Fahrzeug: ${vehicle.displayName}',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Neuer Kilometerstand',
+                suffixText: 'km',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+            ),
+            onPressed: () {
+              final val = double.tryParse(controller.text.trim());
+              if (val != null && val >= 0) {
+                Navigator.of(context).pop(val);
+              }
+            },
+            child: const Text('Speichern'),
+          ),
+        ],
+      ),
+    );
+
+    if (newKm != null && mounted) {
+      await _vehicleRepository.updateVehicleKm(vehicle.id, newKm);
+      await _loadVehicles();
+      _showSnack('Kilometerstand auf ${formatKmValue(newKm)} km aktualisiert.');
     }
   }
 
@@ -408,6 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                   });
                 },
+                onEditKmPressed: _onEditKmPressed,
               ),
 
               const SizedBox(height: 20),

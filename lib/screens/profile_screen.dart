@@ -136,22 +136,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 24),
 
-          // Settings & App info
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.info_outline_rounded),
-                  title: const Text('Über die App'),
-                  subtitle: const Text('TripTrack v1.0.0 (PoC)'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
           // Logout Action Button
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(

@@ -76,7 +76,6 @@ class _AddVehicleDialogState extends State<AddVehicleDialog> {
               autofocus: true,
               decoration: const InputDecoration(
                 labelText: 'Marke',
-                hintText: 'z. B. Volkswagen',
               ),
             ),
             const SizedBox(height: 12),
@@ -84,7 +83,6 @@ class _AddVehicleDialogState extends State<AddVehicleDialog> {
               controller: _modelController,
               decoration: const InputDecoration(
                 labelText: 'Modell',
-                hintText: 'z. B. Golf VIII',
               ),
             ),
             const SizedBox(height: 12),
@@ -92,7 +90,6 @@ class _AddVehicleDialogState extends State<AddVehicleDialog> {
               controller: _plateController,
               decoration: const InputDecoration(
                 labelText: 'Kennzeichen',
-                hintText: 'z. B. EF-TT 2026',
               ),
             ),
             const SizedBox(height: 12),
@@ -103,7 +100,6 @@ class _AddVehicleDialogState extends State<AddVehicleDialog> {
               decoration: const InputDecoration(
                 labelText: 'Aktueller Kilometerstand',
                 suffixText: 'km',
-                hintText: 'z. B. 254660',
               ),
             ),
           ],

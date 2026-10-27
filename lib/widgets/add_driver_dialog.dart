@@ -79,7 +79,6 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
               autofocus: true,
               decoration: const InputDecoration(
                 labelText: 'Vorname',
-                hintText: 'z. B. Max',
               ),
             ),
             const SizedBox(height: 12),
@@ -87,7 +86,6 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
               controller: _lastNameController,
               decoration: const InputDecoration(
                 labelText: 'Name / Nachname',
-                hintText: 'z. B. Mustermann',
               ),
             ),
             const SizedBox(height: 16),
