@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 
 /// Helper utility for reverse geocoding (converting GPS coordinates to street addresses).
 /// Works cross-platform (Android, iOS, Web/Chrome) using OpenStreetMap Nominatim API
-/// with zero paid API keys required.
 class GeocodingHelper {
   /// Converts latitude and longitude into a human-readable street address or city name.
   /// Example: (50.980454, 11.311514) -> "Nordhäuser Straße, Erfurt"
