@@ -125,7 +125,7 @@ class HomeInputsCard extends StatelessWidget {
                     tooltip: 'Kilometerstand anpassen',
                     onPressed: onEditKmPressed,
                   ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 8,),
               ],
             ),
           ),
@@ -134,41 +134,59 @@ class HomeInputsCard extends StatelessWidget {
 
         // Start-Standort (wenn Fahrt aktiv)
         if (isActive && startLocationText != null) ...[
-          InputDecorator(
-            decoration: const InputDecoration(
-              labelText: 'Start-Standort',
-              prefixIcon:
-                  Icon(Icons.flag_rounded, color: AppTheme.primaryGreen),
-            ),
-            child: Text(
-              startLocationText!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+          Builder(
+            builder: (context) {
+              final bool isStartLoading = startLocationText!.contains('wird ermittelt') || startLocationText!.contains('ausstehend');
+              return InputDecorator(
+                decoration: InputDecoration(
+                  labelText: 'Start-Standort',
+                  filled: !isStartLoading,
+                  fillColor: isStartLoading ? null : Colors.grey.shade100,
+                  prefixIcon: Icon(
+                    Icons.flag_rounded,
+                    color: AppTheme.primaryGreen,
+                  ),
+                ),
+                child: Text(
+                  startLocationText!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isStartLoading ? Colors.black87 : AppTheme.textMuted,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 12),
         ],
 
         // Aktueller Standort
-        InputDecorator(
-          decoration: const InputDecoration(
-            labelText: 'Aktueller Standort',
-            prefixIcon:
-                Icon(Icons.location_on_outlined, color: Colors.blue),
-          ),
-          child: Text(
-            currentLocationText,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+        Builder(
+          builder: (context) {
+            final bool isCurrentLoading = currentLocationText.contains('wird ermittelt') || currentLocationText.contains('ausstehend');
+            return InputDecorator(
+              decoration: InputDecoration(
+                labelText: 'Aktueller Standort',
+                filled: !isCurrentLoading,
+                fillColor: isCurrentLoading ? null : Colors.grey.shade100,
+                prefixIcon: Icon(
+                  Icons.location_on_outlined,
+                  color: AppTheme.primaryGreen,
+                ),
+              ),
+              child: Text(
+                currentLocationText,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isCurrentLoading ? Colors.black87 : AppTheme.textMuted,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          },
         ),
       ],
     );
