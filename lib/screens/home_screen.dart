@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import '../utils/logout.dart';
 import 'package:flutter/material.dart';
 
 import '../models/driver.dart';
@@ -17,7 +17,7 @@ import '../widgets/home_action_row.dart';
 import '../widgets/home_inputs_card.dart';
 import '../widgets/last_trip_card.dart';
 import '../widgets/trip_summary_dialog.dart';
-import 'welcome_screen.dart';
+
 
 /// Das Haupt-Dashboard ("Fahren") der Anwendung.
 ///
@@ -470,11 +470,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Fahrer wechseln (Logout)',
-            onPressed: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-              );
-            },
+            onPressed: () => onLogoutPressed(context),
           ),
         ],
       ),

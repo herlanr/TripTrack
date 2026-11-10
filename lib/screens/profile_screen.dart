@@ -8,6 +8,7 @@ import '../widgets/add_vehicle_dialog.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/vehicle_list_card.dart';
 import 'welcome_screen.dart';
+import '../utils/logout.dart';
 
 /// Die Profil- und Einstellungsseite ("Profile") für den angemeldeten Fahrer.
 ///
@@ -78,11 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   /// Meldet den Fahrer ab und leitet zurück zur [WelcomeScreen].
-  void _onLogoutPressed() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Abmelden / Fahrer wechseln',
-            onPressed: _onLogoutPressed,
+            onPressed: () => onLogoutPressed(context),
           ),
         ],
       ),
@@ -146,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            onPressed: _onLogoutPressed,
+            onPressed: () => onLogoutPressed(context),
             icon: const Icon(Icons.logout_rounded),
             label: const Text(
               'Abmelden / Fahrer wechseln',

@@ -39,15 +39,15 @@ Diese Datei enthält alle identifizierten Fehler (Bugs), Formular-Korrekturen, U
     2. 🔀 **Sortierungs-Button**: Bietet Sortieroptionen (Neueste zuerst, Älteste zuerst, Längste Strecke).
   - *Verantwortlich*: Herlan
 
-- [ ] **Visuelle Unterscheidung von Feldern auf der Home-Seite**
+- [X] **Visuelle Unterscheidung von Feldern auf der Home-Seite**
   - *Ziel*: Schreibgeschützte Felder (Fahrer, Start-Ort) deutlicher von editierbaren Feldern (Fahrzeug, Kilometerstand) abgrenzen.
   - *Verantwortlich*: Nils
 
-- [ ] **Aufklappbare "Last Fahrt"-Karte auf dem Home-Screen**
+- [X] **Aufklappbare "Last Fahrt"-Karte auf dem Home-Screen**
   - *Ziel*: Einklappbare/aufklappbare Zusammenfassungskarte auf der Home-Seite zur Platzersparnis.
   - *Verantwortlich*: Nils
 
-- [ ] **Sicherheitsabfrage beim Abmelden (Logout-Guard)**
+- [X] **Sicherheitsabfrage beim Abmelden (Logout-Guard)**
   - *Ziel*: Bestätigungsdialog (*„Möchtest du dich wirklich abmelden?“*) vor dem Logout inklusive Warnung bei aktiver Fahrt.
   - *Verantwortlich*: Nils
 
