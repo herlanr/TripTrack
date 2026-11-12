@@ -55,12 +55,12 @@ Diese Datei enthält alle identifizierten Fehler (Bugs), Formular-Korrekturen, U
 
 ## ⚙️ Funktionserweiterungen & Backend-Roadmap
 
-- [ ] **Profil & Fahrzeug bearbeiten**
+- [x] **Profil & Fahrzeug bearbeiten**
   - *Ziel*: Bearbeiten-Dialoge für Fahrer-Profile und Fahrzeugdaten auf der Profilseite.
   - *Verantwortlich*: Nils
 
 - [ ] **Backend Cloud-API Anbindung (AWS)**
-  - *Ziel*: Anbindung einer REST-API über AWS (z. B. AWS DynamoDB, Lambda, Cognito) zur Synchronisation von Fahrtenbuchdaten in der Cloud.
+  - *Ziel*: Kilometerstand kann anhand eines Bildes gelesen werden (Nutzer macht ein Foto von Kilometerstand, das wird dann bewertet und als KM (Z.B 12333) züruckgegeben)
   - *Verantwortlich*: Herlan
 
 ---

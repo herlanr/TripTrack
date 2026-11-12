@@ -28,11 +28,21 @@ class _MainScreenState extends State<MainScreen> {
   final TripRepository _tripRepository = TripRepository();
   int _currentIndex = 0;
   List<Trip> _savedTrips = [];
+  late Driver? _currentDriver;
 
   @override
   void initState() {
     super.initState();
+    _currentDriver = widget.selectedDriver;
     _loadSavedTrips();
+  }
+
+  @override
+  void didUpdateWidget(MainScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedDriver != oldWidget.selectedDriver) {
+      _currentDriver = widget.selectedDriver;
+    }
   }
 
   /// Lädt alle gespeicherten Fahrten aus dem [TripRepository].
@@ -61,15 +71,22 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final List<Widget> screens = [
       HomeScreen(
-        selectedDriver: widget.selectedDriver,
+        selectedDriver: _currentDriver,
         onTripSaved: _onTripSaved,
       ),
       FahrtbuchScreen(
-        driver: widget.selectedDriver,
+        driver: _currentDriver,
         savedTrips: _savedTrips,
         onDeleteTrip: _onTripDeleted,
       ),
-      ProfileScreen(driver: widget.selectedDriver),
+      ProfileScreen(
+        driver: _currentDriver,
+        onDriverUpdated: (updatedDriver) {
+          setState(() {
+            _currentDriver = updatedDriver;
+          });
+        },
+      ),
     ];
 
     return Scaffold(

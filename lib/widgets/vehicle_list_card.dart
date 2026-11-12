@@ -11,11 +11,15 @@ class VehicleListCard extends StatelessWidget {
     required this.vehicles,
     required this.loading,
     required this.onAddVehiclePressed,
+    this.onEditVehiclePressed,
+    this.onDeleteVehiclePressed,
   });
 
   final List<Vehicle> vehicles;
   final bool loading;
   final VoidCallback onAddVehiclePressed;
+  final ValueChanged<Vehicle>? onEditVehiclePressed;
+  final ValueChanged<Vehicle>? onDeleteVehiclePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +66,25 @@ class VehicleListCard extends StatelessWidget {
               ),
               subtitle: Text(
                 'Kilometerstand: ${formatKm(vehicles[i].currentKm)}',
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (onEditVehiclePressed != null)
+                    IconButton(
+                      icon: const Icon(Icons.edit_rounded,
+                          color: AppTheme.primaryGreen, size: 20),
+                      tooltip: 'Fahrzeug bearbeiten',
+                      onPressed: () => onEditVehiclePressed!(vehicles[i]),
+                    ),
+                  if (onDeleteVehiclePressed != null)
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline_rounded,
+                          color: AppTheme.stopRed, size: 20),
+                      tooltip: 'Fahrzeug löschen',
+                      onPressed: () => onDeleteVehiclePressed!(vehicles[i]),
+                    ),
+                ],
               ),
             ),
             if (i < vehicles.length - 1) const Divider(height: 1),

@@ -19,6 +19,21 @@ class Driver {
 
   String get fullName => '$firstName $lastName';
 
+  /// Erstellt eine Kopie des Fahrers mit optional geänderten Werten.
+  Driver copyWith({
+    String? id,
+    String? firstName,
+    String? lastName,
+    DateTime? dateOfBirth,
+  }) {
+    return Driver(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+    );
+  }
+
   /// Erstellt eine Fahrer-Instanz aus einem JSON-Map.
   factory Driver.fromJson(Map<String, dynamic> json) => _$DriverFromJson(json);
 

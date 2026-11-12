@@ -106,4 +106,16 @@ class DriverRepository {
     drivers.removeWhere((d) => d.id == driverId);
     await _saveAll(drivers);
   }
+
+  /// Beschreibung: Aktualisiert ein bestehendes Fahrer-Profil im lokalen Speicher.
+  /// Autor: @herlanr
+  /// Eingabe: driver ([Driver])
+  /// Ausgabe: Keine
+  Future<void> updateDriver(Driver driver) async {
+    final drivers = await _loadAll();
+    final index = drivers.indexWhere((d) => d.id == driver.id);
+    if (index == -1) return;
+    drivers[index] = driver;
+    await _saveAll(drivers);
+  }
 }

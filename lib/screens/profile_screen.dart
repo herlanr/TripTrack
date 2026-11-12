@@ -2,33 +2,39 @@ import 'package:flutter/material.dart';
 
 import '../models/driver.dart';
 import '../models/vehicle.dart';
+import '../services/driver_repository.dart';
 import '../services/vehicle_repository.dart';
 import '../theme/app_theme.dart';
+import '../utils/logout.dart';
 import '../widgets/add_vehicle_dialog.dart';
+import '../widgets/edit_driver_dialog.dart';
+import '../widgets/edit_vehicle_dialog.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/vehicle_list_card.dart';
-import 'welcome_screen.dart';
-import '../utils/logout.dart';
 
 /// Die Profil- und Einstellungsseite ("Profile") für den angemeldeten Fahrer.
 ///
 /// Bietet folgende Kernfunktionen:
-/// - Anzeige des Fahrer-Avatars, vollständigen Namens und Geburtsdatums.
-/// - Auflistung aller zugeordneten Fahrzeuge inklusive Tacho-Kilometerstand.
+/// - Anzeige und Bearbeiten des Fahrer-Avatars, Namens und Geburtsdatums.
+/// - Auflistung und Bearbeiten/Löschen aller zugeordneten Fahrzeuge inklusive Tacho-Kilometerstand.
 /// - Hinzufügen neuer Fahrzeuge über das Plus-Symbol.
 /// - Abmelden / Fahrer wechseln Schaltfläche.
 class ProfileScreen extends StatefulWidget {
   /// Erstellt die ProfileScreen-Instanz.
-  const ProfileScreen({super.key, this.driver});
+  const ProfileScreen({super.key, this.driver, this.onDriverUpdated});
 
   /// Der angemeldete Fahrer
   final Driver? driver;
+
+  /// Callback bei Aktualisierung des Fahrer-Profils
+  final ValueChanged<Driver>? onDriverUpdated;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final DriverRepository _driverRepository = DriverRepository();
   final VehicleRepository _vehicleRepository = VehicleRepository();
   List<Vehicle> _vehicles = [];
   bool _loading = true;
@@ -55,6 +61,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  /// Öffnet den [EditDriverDialog] zum Bearbeiten des Fahrer-Profils.
+  Future<void> _onEditDriverPressed() async {
+    final driver = widget.driver;
+    if (driver == null) return;
+
+    final Driver? updated = await showDialog<Driver>(
+      context: context,
+      builder: (context) => EditDriverDialog(driver: driver),
+    );
+
+    if (updated != null) {
+      await _driverRepository.updateDriver(updated);
+      widget.onDriverUpdated?.call(updated);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Profil "${updated.fullName}" aktualisiert.'),
+          ),
+        );
+      }
+    }
+  }
+
   /// Öffnet den [AddVehicleDialog] zum Hinzufügen eines neuen Fahrzeugs.
   Future<void> _onAddVehiclePressed() async {
     final driver = widget.driver;
@@ -78,8 +107,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Meldet den Fahrer ab und leitet zurück zur [WelcomeScreen].
+  /// Öffnet den [EditVehicleDialog] zum Bearbeiten eines Fahrzeugs.
+  Future<void> _onEditVehiclePressed(Vehicle vehicle) async {
+    final Vehicle? updated = await showDialog<Vehicle>(
+      context: context,
+      builder: (context) => EditVehicleDialog(
+        vehicle: vehicle,
+        onDelete: () => _onDeleteVehiclePressed(vehicle),
+      ),
+    );
 
+    if (updated != null) {
+      await _vehicleRepository.updateVehicle(updated);
+      await _loadVehicles();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fahrzeug "${updated.displayName}" aktualisiert.'),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Löscht ein Fahrzeug nach Bestätigung.
+  Future<void> _onDeleteVehiclePressed(Vehicle vehicle) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Fahrzeug löschen?'),
+        content: Text(
+          'Möchtest du das Fahrzeug "${vehicle.displayName}" wirklich löschen?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppTheme.stopRed),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Löschen'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _vehicleRepository.deleteVehicle(vehicle.id);
+      await _loadVehicles();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fahrzeug "${vehicle.displayName}" gelöscht.'),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +185,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // Driver Avatar Header Component
-          ProfileHeader(driver: driver),
+          ProfileHeader(
+            driver: driver,
+            onEditPressed: _onEditDriverPressed,
+          ),
 
           const SizedBox(height: 24),
 
@@ -129,6 +217,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             vehicles: _vehicles,
             loading: _loading,
             onAddVehiclePressed: _onAddVehiclePressed,
+            onEditVehiclePressed: _onEditVehiclePressed,
+            onDeleteVehiclePressed: _onDeleteVehiclePressed,
           ),
 
           const SizedBox(height: 24),

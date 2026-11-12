@@ -78,6 +78,19 @@ void main() {
       expect(remaining.where((d) => d.id == defaultId).isEmpty, isTrue);
       expect(remaining.length, equals(1));
     });
+
+    test('updateDriver modifies driver data', () async {
+      final repo = DriverRepository();
+      final drivers = await repo.getDrivers();
+      final target = drivers.first;
+
+      final updated = target.copyWith(firstName: 'Max', lastName: 'Mustermann');
+      await repo.updateDriver(updated);
+
+      final reloaded = await repo.getDrivers();
+      expect(reloaded.first.firstName, equals('Max'));
+      expect(reloaded.first.lastName, equals('Mustermann'));
+    });
   });
 
   group('VehicleRepository Tests', () {
@@ -134,6 +147,34 @@ void main() {
       await vehicleRepo.deleteVehiclesForDriver('d_del');
       list = await vehicleRepo.getVehiclesForDriver('d_del');
       expect(list.isEmpty, isTrue);
+    });
+
+    test('updateVehicle modifies full vehicle data', () async {
+      final vehicleRepo = VehicleRepository();
+      final car = Vehicle(
+        id: 'car_1',
+        driverId: 'driver_1',
+        licensePlate: 'EF-AB 123',
+        model: 'Golf',
+        brand: 'VW',
+        currentKm: 1000.0,
+      );
+
+      await vehicleRepo.addVehicle(car);
+      final updated = car.copyWith(
+        brand: 'BMW',
+        model: '320i',
+        licensePlate: 'EF-XY 999',
+        currentKm: 25000.0,
+      );
+
+      await vehicleRepo.updateVehicle(updated);
+      final list = await vehicleRepo.getVehiclesForDriver('driver_1');
+
+      expect(list.first.brand, equals('BMW'));
+      expect(list.first.model, equals('320i'));
+      expect(list.first.licensePlate, equals('EF-XY 999'));
+      expect(list.first.currentKm, equals(25000.0));
     });
   });
 

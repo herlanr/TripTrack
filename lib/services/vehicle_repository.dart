@@ -103,6 +103,18 @@ class VehicleRepository {
     await _saveAll(all);
   }
 
+  /// Beschreibung: Aktualisiert die Daten eines bestehenden Fahrzeugs.
+  /// Autor: @herlanr
+  /// Eingabe: vehicle ([Vehicle])
+  /// Ausgabe: Keine
+  Future<void> updateVehicle(Vehicle vehicle) async {
+    final all = await _loadAll();
+    final index = all.indexWhere((v) => v.id == vehicle.id);
+    if (index == -1) return;
+    all[index] = vehicle;
+    await _saveAll(all);
+  }
+
   /// Beschreibung: Löscht ein Fahrzeug anhand seiner ID.
   /// Autor: @herlanr
   /// Eingabe: vehicleId (String)
