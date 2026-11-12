@@ -64,9 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Trip? _lastTrip;
 
   Timer? _stopwatchTimer;
+  Timer? _locationTimer;
   Duration _elapsedTime = Duration.zero;
   String _currentLocationText = 'GPS wird ermittelt...';
   bool _busy = false;
+  bool _fetchingLocation = false;
 
   TripPhase get _phase => _tripService.phase;
 
@@ -75,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadVehicles();
     _fetchCurrentLocation();
+    _startLocationTimer();
   }
 
   @override
@@ -84,6 +87,16 @@ class _HomeScreenState extends State<HomeScreen> {
         widget.vehiclesVersion != oldWidget.vehiclesVersion) {
       _loadVehicles();
     }
+  }
+
+  /// Startet den periodischen Timer zur automatischen Aktualisierung der GPS-Position (alle 10 Sekunden).
+  void _startLocationTimer() {
+    _locationTimer?.cancel();
+    _locationTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      if (mounted) {
+        _fetchCurrentLocation();
+      }
+    });
   }
 
   /// Lädt die dem aktuellen Fahrer zugeordneten Fahrzeuge und letzten Fahrten aus dem Repository.
@@ -122,27 +135,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Ermittelt die aktuelle GPS-Position und löst diese über Reverse Geocoding in eine Straße auf.
   Future<void> _fetchCurrentLocation() async {
-    final fix = await _locationTracking.requestFixWithPermission();
-    if (fix != null && mounted) {
-      final address = await GeocodingHelper.getAddressFromCoordinates(
-        fix.latitude,
-        fix.longitude,
-      );
-      if (mounted) {
+    if (_fetchingLocation) return;
+    _fetchingLocation = true;
+    try {
+      final fix = await _locationTracking.requestFixWithPermission();
+      if (fix != null && mounted) {
+        final address = await GeocodingHelper.getAddressFromCoordinates(
+          fix.latitude,
+          fix.longitude,
+        );
+        if (mounted) {
+          setState(() {
+            _currentLocationText = address;
+          });
+        }
+      } else if (mounted && _currentLocationText == 'GPS wird ermittelt...') {
         setState(() {
-          _currentLocationText = address;
+          _currentLocationText = 'GPS bereit (Ort ausstehend)';
         });
       }
-    } else if (mounted) {
-      setState(() {
-        _currentLocationText = 'GPS bereit (Ort ausstehend)';
-      });
+    } finally {
+      _fetchingLocation = false;
     }
   }
 
   @override
   void dispose() {
     _stopwatchTimer?.cancel();
+    _locationTimer?.cancel();
     _startKmController.dispose();
     _tripService.dispose();
     _locationTracking.dispose();

@@ -1,8 +1,9 @@
 import '../models/location_point.dart';
 import '../models/trip.dart';
 
-/// Bietet eine Liste von 10 realistischen Beispielfahrten für das Test-Fahrer-Profil ("Test Fahrer").
-/// Diese Fahrten decken verschiedene Strecken, Zeiträume und Orte in Thüringen und Mitteldeutschland ab,
+/// Bietet eine umfangreiche Liste von 25 realistischen Beispielfahrten in Deutschland
+/// für das Test-Fahrer-Profil ("Test Fahrer").
+/// Diese Fahrten decken verschiedene Strecken, Zeiträume, Städte und Regionen in Deutschland ab,
 /// um alle Funktionen der App (Datumsfilter, Suchfilter, Sortierung, Export und Routen-Zeitleiste) vorzuführen.
 final List<Trip> mockTrips = [
   // 1. Fahrt: Erfurt ➔ Gera
@@ -207,7 +208,7 @@ final List<Trip> mockTrips = [
     ],
   ),
 
-  // 5. Fahrt: Erfurt ➔ Leipzig (Lange Strecke)
+  // 5. Fahrt: Erfurt ➔ Leipzig
   Trip(
     id: 'mock_trip_05',
     driverName: 'Test Fahrer',
@@ -355,7 +356,7 @@ final List<Trip> mockTrips = [
     ],
   ),
 
-  // 9. Fahrt: Erfurt ➔ Suhl (Thüringer Wald)
+  // 9. Fahrt: Erfurt ➔ Suhl
   Trip(
     id: 'mock_trip_09',
     driverName: 'Test Fahrer',
@@ -398,7 +399,7 @@ final List<Trip> mockTrips = [
     ],
   ),
 
-  // 10. Fahrt: Erfurt ➔ Nordhausen (Harz)
+  // 10. Fahrt: Erfurt ➔ Nordhausen
   Trip(
     id: 'mock_trip_10',
     driverName: 'Test Fahrer',
@@ -437,6 +438,621 @@ final List<Trip> mockTrips = [
         longitude: 10.8120,
         timestamp: DateTime(2026, 10, 15, 10, 26),
         addressText: 'Hainleite / Nordhausen Süd (B4)',
+      ),
+    ],
+  ),
+
+  // 11. Fahrt: Erfurt ➔ Halle (Saale)
+  Trip(
+    id: 'mock_trip_11',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 254564.0,
+    startTime: DateTime(2026, 10, 20, 13, 0),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2026, 10, 20, 14, 05),
+    endLatitude: 51.4826,
+    endLongitude: 11.9791,
+    endLocationText: 'Halle (Saale) Marktplatz',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9612,
+        longitude: 11.1120,
+        timestamp: DateTime(2026, 10, 20, 13, 12),
+        addressText: 'Erfurt Ost (A4)',
+      ),
+      LocationPoint(
+        latitude: 51.0820,
+        longitude: 11.6210,
+        timestamp: DateTime(2026, 10, 20, 13, 28),
+        addressText: 'Naumburg / Camburg (B88)',
+      ),
+      LocationPoint(
+        latitude: 51.2180,
+        longitude: 11.8210,
+        timestamp: DateTime(2026, 10, 20, 13, 44),
+        addressText: 'Weißenfels Nord (A9)',
+      ),
+      LocationPoint(
+        latitude: 51.4210,
+        longitude: 11.9610,
+        timestamp: DateTime(2026, 10, 20, 13, 58),
+        addressText: 'Halle Süd (A143)',
+      ),
+    ],
+  ),
+
+  // 12. Fahrt: Erfurt ➔ Kassel
+  Trip(
+    id: 'mock_trip_12',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 254654.0,
+    startTime: DateTime(2026, 10, 28, 8, 30),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2026, 10, 28, 10, 0),
+    endLatitude: 51.3127,
+    endLongitude: 9.4478,
+    endLocationText: 'Kassel Wilhelmshöhe',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9510,
+        longitude: 10.9120,
+        timestamp: DateTime(2026, 10, 28, 8, 42),
+        addressText: 'Erfurt West (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.9660,
+        longitude: 10.3060,
+        timestamp: DateTime(2026, 10, 28, 9, 05),
+        addressText: 'Eisenach (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.9720,
+        longitude: 9.7910,
+        timestamp: DateTime(2026, 10, 28, 9, 30),
+        addressText: 'Bad Hersfeld (A7)',
+      ),
+      LocationPoint(
+        latitude: 51.1820,
+        longitude: 9.5010,
+        timestamp: DateTime(2026, 10, 28, 9, 48),
+        addressText: 'Melsungen / Kassel Süd (A7)',
+      ),
+    ],
+  ),
+
+  // 13. Fahrt: Erfurt ➔ Dresden (Frauenkirche)
+  Trip(
+    id: 'mock_trip_13',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 254799.0,
+    startTime: DateTime(2026, 11, 4, 9, 0),
+    startLatitude: 50.9781,
+    startLongitude: 11.0249,
+    startLocationText: 'Erfurt Domplatz',
+    endTime: DateTime(2026, 11, 4, 11, 10),
+    endLatitude: 51.0519,
+    endLongitude: 13.7415,
+    endLocationText: 'Dresden Neumarkt (Frauenkirche)',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9612,
+        longitude: 11.1120,
+        timestamp: DateTime(2026, 11, 4, 9, 12),
+        addressText: 'Erfurt Ost (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.8520,
+        longitude: 11.8540,
+        timestamp: DateTime(2026, 11, 4, 9, 38),
+        addressText: 'Hermsdorfer Kreuz (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.8280,
+        longitude: 12.4910,
+        timestamp: DateTime(2026, 11, 4, 10, 05),
+        addressText: 'Zwickau / Chemnitz West (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.8350,
+        longitude: 12.9210,
+        timestamp: DateTime(2026, 11, 4, 10, 30),
+        addressText: 'Chemnitz Ost (A4)',
+      ),
+      LocationPoint(
+        latitude: 51.0420,
+        longitude: 13.5810,
+        timestamp: DateTime(2026, 11, 4, 10, 58),
+        addressText: 'Dresden Altstadt (A4/B173)',
+      ),
+    ],
+  ),
+
+  // 14. Fahrt: Erfurt ➔ Frankfurt am Main
+  Trip(
+    id: 'mock_trip_14',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 255009.0,
+    startTime: DateTime(2026, 11, 12, 7, 30),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2026, 11, 12, 10, 0),
+    endLatitude: 50.1109,
+    endLongitude: 8.6821,
+    endLocationText: 'Frankfurt am Main Hauptwache',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9510,
+        longitude: 10.9120,
+        timestamp: DateTime(2026, 11, 12, 7, 42),
+        addressText: 'Erfurt West (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.9660,
+        longitude: 10.3060,
+        timestamp: DateTime(2026, 11, 12, 8, 10),
+        addressText: 'Eisenach (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.5510,
+        longitude: 9.6810,
+        timestamp: DateTime(2026, 11, 12, 8, 48),
+        addressText: 'Fulda Süd (A66)',
+      ),
+      LocationPoint(
+        latitude: 50.1820,
+        longitude: 8.9210,
+        timestamp: DateTime(2026, 11, 12, 9, 30),
+        addressText: 'Hanau / Frankfurt Ost (A66)',
+      ),
+    ],
+  ),
+
+  // 15. Fahrt: Erfurt ➔ Berlin (Alexanderplatz)
+  Trip(
+    id: 'mock_trip_15',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 255264.0,
+    startTime: DateTime(2026, 11, 20, 8, 0),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2026, 11, 20, 10, 50),
+    endLatitude: 52.5219,
+    endLongitude: 13.4132,
+    endLocationText: 'Berlin Alexanderplatz',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9612,
+        longitude: 11.1120,
+        timestamp: DateTime(2026, 11, 20, 8, 12),
+        addressText: 'Erfurt Ost (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.9810,
+        longitude: 11.5820,
+        timestamp: DateTime(2026, 11, 20, 8, 35),
+        addressText: 'Hermsdorfer Kreuz (A9)',
+      ),
+      LocationPoint(
+        latitude: 51.6820,
+        longitude: 12.1810,
+        timestamp: DateTime(2026, 11, 20, 9, 18),
+        addressText: 'Dessau / Bitterfeld (A9)',
+      ),
+      LocationPoint(
+        latitude: 52.3010,
+        longitude: 12.9810,
+        timestamp: DateTime(2026, 11, 20, 9, 58),
+        addressText: 'Potsdamer Platz (A115 / AVUS)',
+      ),
+      LocationPoint(
+        latitude: 52.5020,
+        longitude: 13.3310,
+        timestamp: DateTime(2026, 11, 20, 10, 32),
+        addressText: 'Berlin Tiergarten / Kurfürstendamm',
+      ),
+    ],
+  ),
+
+  // 16. Fahrt: Erfurt ➔ Nürnberg
+  Trip(
+    id: 'mock_trip_16',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 255564.0,
+    startTime: DateTime(2026, 11, 28, 10, 0),
+    startLatitude: 50.9781,
+    startLongitude: 11.0249,
+    startLocationText: 'Erfurt Domplatz',
+    endTime: DateTime(2026, 11, 28, 12, 10),
+    endLatitude: 49.4578,
+    endLongitude: 11.0772,
+    endLocationText: 'Nürnberg Hauptmarkt / Kaiserburg',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.8810,
+        longitude: 10.9620,
+        timestamp: DateTime(2026, 11, 28, 10, 14),
+        addressText: 'Erfurt Süd (A71)',
+      ),
+      LocationPoint(
+        latitude: 50.3620,
+        longitude: 10.9810,
+        timestamp: DateTime(2026, 11, 28, 10, 52),
+        addressText: 'Coburg (A73)',
+      ),
+      LocationPoint(
+        latitude: 49.8920,
+        longitude: 10.8910,
+        timestamp: DateTime(2026, 11, 28, 11, 25),
+        addressText: 'Bamberg (A73)',
+      ),
+      LocationPoint(
+        latitude: 49.5980,
+        longitude: 11.0120,
+        timestamp: DateTime(2026, 11, 28, 11, 50),
+        addressText: 'Erlangen (A73)',
+      ),
+    ],
+  ),
+
+  // 17. Fahrt: Erfurt ➔ Göttingen
+  Trip(
+    id: 'mock_trip_17',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 255794.0,
+    startTime: DateTime(2026, 12, 5, 13, 15),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2026, 12, 5, 14, 25),
+    endLatitude: 51.5327,
+    endLongitude: 9.9352,
+    endLocationText: 'Göttingen Gänseliesel Markt',
+    routePoints: [
+      LocationPoint(
+        latitude: 51.0210,
+        longitude: 10.9980,
+        timestamp: DateTime(2026, 12, 5, 13, 26),
+        addressText: 'Gispersleben (B4)',
+      ),
+      LocationPoint(
+        latitude: 51.3680,
+        longitude: 10.8620,
+        timestamp: DateTime(2026, 12, 5, 13, 50),
+        addressText: 'Sondershausen (B4)',
+      ),
+      LocationPoint(
+        latitude: 51.5120,
+        longitude: 10.1810,
+        timestamp: DateTime(2026, 12, 5, 14, 10),
+        addressText: 'Duderstadt (B447)',
+      ),
+    ],
+  ),
+
+  // 18. Fahrt: Erfurt ➔ Magdeburg
+  Trip(
+    id: 'mock_trip_18',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 255909.0,
+    startTime: DateTime(2026, 12, 12, 9, 30),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2026, 12, 12, 11, 05),
+    endLatitude: 52.1306,
+    endLongitude: 11.6366,
+    endLocationText: 'Magdeburg Hasselbachplatz',
+    routePoints: [
+      LocationPoint(
+        latitude: 51.1620,
+        longitude: 10.9510,
+        timestamp: DateTime(2026, 12, 12, 9, 48),
+        addressText: 'Straußfurt (B4)',
+      ),
+      LocationPoint(
+        latitude: 51.5012,
+        longitude: 10.7932,
+        timestamp: DateTime(2026, 12, 12, 10, 12),
+        addressText: 'Nordhausen (A38)',
+      ),
+      LocationPoint(
+        latitude: 51.8410,
+        longitude: 11.1510,
+        timestamp: DateTime(2026, 12, 12, 10, 40),
+        addressText: 'Quedlinburg / Halberstadt (B71)',
+      ),
+    ],
+  ),
+
+  // 19. Fahrt: Erfurt ➔ Coburg
+  Trip(
+    id: 'mock_trip_19',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 256069.0,
+    startTime: DateTime(2026, 12, 18, 15, 0),
+    startLatitude: 50.9760,
+    startLongitude: 11.0350,
+    startLocationText: 'Erfurt Anger',
+    endTime: DateTime(2026, 12, 18, 16, 05),
+    endLatitude: 50.2581,
+    endLongitude: 10.9648,
+    endLocationText: 'Coburg Marktplatz',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.8810,
+        longitude: 10.9620,
+        timestamp: DateTime(2026, 12, 18, 15, 12),
+        addressText: 'Erfurt Süd (A71)',
+      ),
+      LocationPoint(
+        latitude: 50.6820,
+        longitude: 10.9210,
+        timestamp: DateTime(2026, 12, 18, 15, 30),
+        addressText: 'Ilmenau (A71)',
+      ),
+      LocationPoint(
+        latitude: 50.3620,
+        longitude: 10.9810,
+        timestamp: DateTime(2026, 12, 18, 15, 52),
+        addressText: 'Neustadt bei Coburg (A73)',
+      ),
+    ],
+  ),
+
+  // 20. Fahrt: Erfurt ➔ Bamberg
+  Trip(
+    id: 'mock_trip_20',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 256159.0,
+    startTime: DateTime(2026, 12, 28, 11, 0),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2026, 12, 28, 12, 25),
+    endLatitude: 49.8917,
+    endLongitude: 10.8872,
+    endLocationText: 'Bamberg Kaiserdom',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.8810,
+        longitude: 10.9620,
+        timestamp: DateTime(2026, 12, 28, 11, 14),
+        addressText: 'Erfurt Süd (A71)',
+      ),
+      LocationPoint(
+        latitude: 50.3620,
+        longitude: 10.9810,
+        timestamp: DateTime(2026, 12, 28, 11, 48),
+        addressText: 'Coburg (A73)',
+      ),
+      LocationPoint(
+        latitude: 50.0120,
+        longitude: 10.9610,
+        timestamp: DateTime(2026, 12, 28, 12, 10),
+        addressText: 'Lichtenfels / Bad Staffelstein (A73)',
+      ),
+    ],
+  ),
+
+  // 21. Fahrt: Erfurt ➔ Schmalkalden
+  Trip(
+    id: 'mock_trip_21',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 256289.0,
+    startTime: DateTime(2027, 1, 5, 14, 30),
+    startLatitude: 50.9781,
+    startLongitude: 11.0249,
+    startLocationText: 'Erfurt Domplatz',
+    endTime: DateTime(2027, 1, 5, 15, 18),
+    endLatitude: 50.7208,
+    endLongitude: 10.4512,
+    endLocationText: 'Schmalkalden Altstadt',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9410,
+        longitude: 10.9980,
+        timestamp: DateTime(2027, 1, 5, 14, 38),
+        addressText: 'Erfurt Süd (A71)',
+      ),
+      LocationPoint(
+        latitude: 50.7810,
+        longitude: 10.6820,
+        timestamp: DateTime(2027, 1, 5, 14, 55),
+        addressText: 'Oberhof / Zella-Mehlis (A71)',
+      ),
+    ],
+  ),
+
+  // 22. Fahrt: Erfurt ➔ Potsdam
+  Trip(
+    id: 'mock_trip_22',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 256354.0,
+    startTime: DateTime(2027, 1, 10, 8, 30),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2027, 1, 10, 11, 0),
+    endLatitude: 52.4006,
+    endLongitude: 13.0438,
+    endLocationText: 'Potsdam Schloss Sanssouci',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9612,
+        longitude: 11.1120,
+        timestamp: DateTime(2027, 1, 10, 8, 42),
+        addressText: 'Erfurt Ost (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.9810,
+        longitude: 11.5820,
+        timestamp: DateTime(2027, 1, 10, 9, 08),
+        addressText: 'Hermsdorfer Kreuz (A9)',
+      ),
+      LocationPoint(
+        latitude: 51.8810,
+        longitude: 12.3510,
+        timestamp: DateTime(2027, 1, 10, 9, 58),
+        addressText: 'Coswig / Wittenberg (A9)',
+      ),
+      LocationPoint(
+        latitude: 52.2810,
+        longitude: 12.9210,
+        timestamp: DateTime(2027, 1, 10, 10, 42),
+        addressText: 'Dreieck Potsdam (A10 / Berliner Ring)',
+      ),
+    ],
+  ),
+
+  // 23. Fahrt: Erfurt ➔ Meiningen
+  Trip(
+    id: 'mock_trip_23',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 256634.0,
+    startTime: DateTime(2027, 1, 15, 16, 0),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2027, 1, 15, 17, 02),
+    endLatitude: 50.5678,
+    endLongitude: 10.4156,
+    endLocationText: 'Meiningen Staatstheater',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.8810,
+        longitude: 10.9620,
+        timestamp: DateTime(2027, 1, 15, 16, 12),
+        addressText: 'Erfurt Süd (A71)',
+      ),
+      LocationPoint(
+        latitude: 50.6820,
+        longitude: 10.9210,
+        timestamp: DateTime(2027, 1, 15, 16, 30),
+        addressText: 'Ilmenau-West (A71)',
+      ),
+      LocationPoint(
+        latitude: 50.5820,
+        longitude: 10.5120,
+        timestamp: DateTime(2027, 1, 15, 16, 48),
+        addressText: 'Meiningen Nord (A71)',
+      ),
+    ],
+  ),
+
+  // 24. Fahrt: Erfurt ➔ Würzburg
+  Trip(
+    id: 'mock_trip_24',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 256719.0,
+    startTime: DateTime(2027, 1, 22, 9, 0),
+    startLatitude: 50.9781,
+    startLongitude: 11.0249,
+    startLocationText: 'Erfurt Domplatz',
+    endTime: DateTime(2027, 1, 22, 11, 0),
+    endLatitude: 49.7925,
+    endLongitude: 9.9389,
+    endLocationText: 'Würzburg Residenz',
+    routePoints: [
+      LocationPoint(
+        latitude: 50.9510,
+        longitude: 10.9120,
+        timestamp: DateTime(2027, 1, 22, 9, 12),
+        addressText: 'Erfurt West (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.9660,
+        longitude: 10.3060,
+        timestamp: DateTime(2027, 1, 22, 9, 38),
+        addressText: 'Eisenach (A4)',
+      ),
+      LocationPoint(
+        latitude: 50.5510,
+        longitude: 9.6810,
+        timestamp: DateTime(2027, 1, 22, 10, 15),
+        addressText: 'Fulda (A7)',
+      ),
+      LocationPoint(
+        latitude: 49.9820,
+        longitude: 9.9810,
+        timestamp: DateTime(2027, 1, 22, 10, 45),
+        addressText: 'Kitzingen / Würzburg Nord (A7)',
+      ),
+    ],
+  ),
+
+  // 25. Fahrt: Erfurt ➔ Braunschweig
+  Trip(
+    id: 'mock_trip_25',
+    driverName: 'Test Fahrer',
+    driverId: 'test_driver_101',
+    vehicleId: 'test_vehicle_202',
+    startKm: 256914.0,
+    startTime: DateTime(2027, 1, 28, 10, 30),
+    startLatitude: 50.9725,
+    startLongitude: 11.0384,
+    startLocationText: 'Erfurt Hauptbahnhof',
+    endTime: DateTime(2027, 1, 28, 12, 20),
+    endLatitude: 52.2647,
+    endLongitude: 10.5238,
+    endLocationText: 'Braunschweig Altstadtmarkt',
+    routePoints: [
+      LocationPoint(
+        latitude: 51.0210,
+        longitude: 10.9980,
+        timestamp: DateTime(2027, 1, 28, 10, 42),
+        addressText: 'Gispersleben (B4)',
+      ),
+      LocationPoint(
+        latitude: 51.5012,
+        longitude: 10.7932,
+        timestamp: DateTime(2027, 1, 28, 11, 10),
+        addressText: 'Nordhausen (A38)',
+      ),
+      LocationPoint(
+        latitude: 51.8820,
+        longitude: 10.5510,
+        timestamp: DateTime(2027, 1, 28, 11, 45),
+        addressText: 'Goslar / Bad Harzburg (A36)',
+      ),
+      LocationPoint(
+        latitude: 52.1810,
+        longitude: 10.5120,
+        timestamp: DateTime(2027, 1, 28, 12, 05),
+        addressText: 'Wolfenbüttel (A36)',
       ),
     ],
   ),
