@@ -59,42 +59,51 @@ class HomeInputsCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Angemeldeter Fahrer
+        // Angemeldeter Fahrer (schreibgeschützt)
         InputDecorator(
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'Fahrer Name',
+            filled: true,
+            fillColor: Colors.grey.shade100,
             prefixIcon:
-                Icon(Icons.person_rounded, color: AppTheme.primaryGreen),
+                const Icon(Icons.person_rounded, color: AppTheme.primaryGreen),
           ),
           child: Text(
             selectedDriverName,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: 15,
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
-        // Fahrzeug-Auswahl-Dropdown
+        // Fahrzeug-Auswahl-Dropdown (aktiv auswählbar vor Fahrtstart)
         if (vehicles.isNotEmpty) ...[
           DropdownButtonFormField<Vehicle>(
             initialValue: selectedVehicle,
-            decoration: const InputDecoration(
+            isExpanded: true,
+            decoration: InputDecoration(
               labelText: 'Fahrzeug auswählen',
-              prefixIcon: Icon(Icons.directions_car_outlined),
+              filled: true,
+              fillColor: canStart ? Colors.white : Colors.grey.shade100,
+              prefixIcon: const Icon(Icons.directions_car_outlined),
             ),
             items: vehicles
                 .map(
                   (v) => DropdownMenuItem(
                     value: v,
-                    child: Text(v.displayName),
+                    child: Text(
+                      v.displayName,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
                 )
                 .toList(),
             onChanged: canStart ? onVehicleChanged : null,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
         ],
 
         // Kilometerstand (schreibgeschützt, Bearbeiten über Stift-Icon rechts)
@@ -103,6 +112,8 @@ class HomeInputsCard extends StatelessWidget {
           readOnly: true,
           decoration: InputDecoration(
             labelText: 'Kilometerstand',
+            filled: true,
+            fillColor: Colors.grey.shade100,
             prefixIcon: const Icon(Icons.speed_outlined),
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
@@ -125,68 +136,58 @@ class HomeInputsCard extends StatelessWidget {
                     tooltip: 'Kilometerstand anpassen',
                     onPressed: onEditKmPressed,
                   ),
-                const SizedBox(width: 8,),
+                const SizedBox(width: 8),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
         // Start-Standort (wenn Fahrt aktiv)
         if (isActive && startLocationText != null) ...[
-          Builder(
-            builder: (context) {
-              final bool isStartLoading = startLocationText!.contains('wird ermittelt') || startLocationText!.contains('ausstehend');
-              return InputDecorator(
-                decoration: InputDecoration(
-                  labelText: 'Start-Standort',
-                  filled: !isStartLoading,
-                  fillColor: isStartLoading ? null : Colors.grey.shade100,
-                  prefixIcon: Icon(
-                    Icons.flag_rounded,
-                    color: AppTheme.primaryGreen,
-                  ),
-                ),
-                child: Text(
-                  startLocationText!,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isStartLoading ? Colors.black87 : AppTheme.textMuted,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
+          InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Start-Standort',
+              filled: true,
+              fillColor: Colors.grey.shade100,
+              prefixIcon: const Icon(
+                Icons.flag_rounded,
+                color: AppTheme.primaryGreen,
+              ),
+            ),
+            child: Text(
+              startLocationText!,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
         ],
 
-        // Aktueller Standort
-        Builder(
-          builder: (context) {
-            final bool isCurrentLoading = currentLocationText.contains('wird ermittelt') || currentLocationText.contains('ausstehend');
-            return InputDecorator(
-              decoration: InputDecoration(
-                labelText: 'Aktueller Standort',
-                filled: !isCurrentLoading,
-                fillColor: isCurrentLoading ? null : Colors.grey.shade100,
-                prefixIcon: Icon(
-                  Icons.location_on_outlined,
-                  color: AppTheme.primaryGreen,
-                ),
-              ),
-              child: Text(
-                currentLocationText,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isCurrentLoading ? Colors.black87 : AppTheme.textMuted,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            );
-          },
+        // Aktueller Standort (schreibgeschützt)
+        InputDecorator(
+          decoration: InputDecoration(
+            labelText: 'Aktueller Standort',
+            filled: true,
+            fillColor: Colors.grey.shade100,
+            prefixIcon: const Icon(
+              Icons.location_on_outlined,
+              color: AppTheme.primaryGreen,
+            ),
+          ),
+          child: Text(
+            currentLocationText,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );

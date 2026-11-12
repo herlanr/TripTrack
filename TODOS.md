@@ -6,7 +6,7 @@ Diese Datei enthält alle identifizierten Fehler (Bugs), Formular-Korrekturen, U
 
 ## 🐛 Identifizierte Bugs & Formular-Korrekturen
 
-- [ ] **Formulare verbessern (Felder werden abgeschnitten / Overflow)**
+- [x] **Formulare verbessern (Felder werden abgeschnitten / Overflow)**
   - *Problem*: Bei geöffneter Bildschirmtastatur werden Eingabefelder in Dialogen oder Formularen teilweise abgeschnitten.
   - *Lösung*: `SingleChildScrollView` und flexibles Tastatur-Padding (`MediaQuery.of(context).viewInsets.bottom`) in Dialogen sicherstellen.
   - *Verantwortlich*: Nils

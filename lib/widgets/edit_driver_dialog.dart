@@ -91,6 +91,7 @@ class _EditDriverDialogState extends State<EditDriverDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
@@ -110,47 +111,45 @@ class _EditDriverDialogState extends State<EditDriverDialog> {
           ),
         ],
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _firstNameController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Vorname',
-                prefixIcon: Icon(Icons.person_outline_rounded),
-              ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _firstNameController,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Vorname',
+              prefixIcon: Icon(Icons.person_outline_rounded),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _lastNameController,
-              decoration: const InputDecoration(
-                labelText: 'Name / Nachname',
-                prefixIcon: Icon(Icons.badge_outlined),
-              ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _lastNameController,
+            decoration: const InputDecoration(
+              labelText: 'Name / Nachname',
+              prefixIcon: Icon(Icons.badge_outlined),
             ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: _pickDateOfBirth,
-              borderRadius: BorderRadius.circular(12),
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Geburtsdatum',
-                  prefixIcon: Icon(Icons.cake_outlined),
-                  suffixIcon: Icon(Icons.calendar_today_rounded),
-                ),
-                child: Text(
-                  formatDate(_selectedDob),
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
-                  ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: _pickDateOfBirth,
+            borderRadius: BorderRadius.circular(12),
+            child: InputDecorator(
+              decoration: const InputDecoration(
+                labelText: 'Geburtsdatum',
+                prefixIcon: Icon(Icons.cake_outlined),
+                suffixIcon: Icon(Icons.calendar_today_rounded),
+              ),
+              child: Text(
+                formatDate(_selectedDob),
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         TextButton(

@@ -27,6 +27,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final TripRepository _tripRepository = TripRepository();
   int _currentIndex = 0;
+  int _vehiclesVersion = 0;
   List<Trip> _savedTrips = [];
   late Driver? _currentDriver;
 
@@ -73,6 +74,12 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(
         selectedDriver: _currentDriver,
         onTripSaved: _onTripSaved,
+        vehiclesVersion: _vehiclesVersion,
+        onVehiclesChanged: () {
+          setState(() {
+            _vehiclesVersion++;
+          });
+        },
       ),
       FahrtbuchScreen(
         driver: _currentDriver,
@@ -81,9 +88,15 @@ class _MainScreenState extends State<MainScreen> {
       ),
       ProfileScreen(
         driver: _currentDriver,
+        vehiclesVersion: _vehiclesVersion,
         onDriverUpdated: (updatedDriver) {
           setState(() {
             _currentDriver = updatedDriver;
+          });
+        },
+        onVehiclesChanged: () {
+          setState(() {
+            _vehiclesVersion++;
           });
         },
       ),
@@ -99,6 +112,7 @@ class _MainScreenState extends State<MainScreen> {
         onDestinationSelected: (index) {
           setState(() {
             _currentIndex = index;
+            _vehiclesVersion++;
           });
         },
         destinations: const [

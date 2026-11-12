@@ -69,48 +69,53 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
       title: const Text('Neuen Fahrer anlegen'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _firstNameController,
-              autofocus: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _firstNameController,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Vorname',
+              prefixIcon: Icon(Icons.person_outline_rounded),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _lastNameController,
+            decoration: const InputDecoration(
+              labelText: 'Name / Nachname',
+              prefixIcon: Icon(Icons.badge_outlined),
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: _pickDateOfBirth,
+            borderRadius: BorderRadius.circular(12),
+            child: InputDecorator(
               decoration: const InputDecoration(
-                labelText: 'Vorname',
+                labelText: 'Geburtsdatum',
+                prefixIcon: Icon(Icons.cake_outlined),
+                suffixIcon: Icon(Icons.calendar_today_rounded),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _lastNameController,
-              decoration: const InputDecoration(
-                labelText: 'Name / Nachname',
-              ),
-            ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: _pickDateOfBirth,
-              borderRadius: BorderRadius.circular(12),
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Geburtsdatum',
-                  suffixIcon: Icon(Icons.calendar_today_rounded),
-                ),
-                child: Text(
-                  _selectedDob != null
-                      ? _formatDate(_selectedDob!)
-                      : 'Datum auswählen',
-                  style: TextStyle(
-                    color: _selectedDob != null
-                        ? Colors.black87
-                        : Colors.grey.shade600,
-                  ),
+              child: Text(
+                _selectedDob != null
+                    ? _formatDate(_selectedDob!)
+                    : 'Datum auswählen',
+                style: TextStyle(
+                  color: _selectedDob != null
+                      ? Colors.black87
+                      : Colors.grey.shade600,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         TextButton(

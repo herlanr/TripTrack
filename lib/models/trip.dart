@@ -75,7 +75,7 @@ class Trip {
     return total;
   }
 
-  static const double _minRouteSegmentKm = 0.01; // Mindestabstand 10 Meter
+  static const double _minRouteSegmentKm = 0.002; // Mindestabstand 2 Meter
 
   /// Gibt alle erfassten GPS-Punkte in chronologischer Reihenfolge zurück.
   List<LocationPoint> allGpsPoints() {

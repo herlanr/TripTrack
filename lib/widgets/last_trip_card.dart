@@ -22,56 +22,89 @@ class LastTripCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      child: ExpansionTile(
-        leading: const Icon(
-          Icons.history_rounded,
-          color: AppTheme.primaryGreen,
-          size: 22,
-        ),
-        title: const Text(
-          'Last Fahrt',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.textDark,
-          ),
-        ),
-        subtitle: trip == null
-            ? Text(
-                'Noch keine Fahrt in dieser Sitzung beendet.',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-              )
-            : null,
-        enabled: trip != null,
-        children: trip == null ? [] : [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Column(
-                    children: [
-                      InfoRow(
-                        label: 'Zeit',
-                        value:
-                            '${formatTime(trip.startTime)}${trip.endTime != null ? ' - ${formatTime(trip.endTime!)}' : ''} (${formatDuration(trip.duration)})',
-                      ),
-                      const SizedBox(height: 8),
-                      InfoRow(
-                        label: 'KM',
-                        value: formatKm(trip.distanceKm),
-                      ),
-                      const SizedBox(height: 8),
-                      InfoRow(
-                        label: 'Anfang',
-                        value: trip.startLocationText ?? '—',
-                      ),
-                      const SizedBox(height: 8),
-                      InfoRow(
-                        label: 'Ende',
-                        value: trip.endLocationText ?? '—',
-                      ),
-                    ],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.history_rounded,
+                  color: AppTheme.primaryGreen,
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Letzte Fahrt',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textDark,
                   ),
                 ),
+                const Spacer(),
+                if (trip != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      formatKm(trip.distanceKm),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green.shade800,
+                      ),
+                    ),
+                  ),
               ],
+            ),
+            const Divider(height: 20),
+            if (trip == null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Center(
+                  child: Text(
+                    'Noch keine Fahrt aufgezeichnet.',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Column(
+                children: [
+                  InfoRow(
+                    label: 'Zeit',
+                    value:
+                        '${formatTime(trip.startTime)}${trip.endTime != null ? ' - ${formatTime(trip.endTime!)}' : ''} (${formatDuration(trip.duration)})',
+                  ),
+                  const SizedBox(height: 8),
+                  InfoRow(
+                    label: 'KM',
+                    value: formatKm(trip.distanceKm),
+                  ),
+                  const SizedBox(height: 8),
+                  InfoRow(
+                    label: 'Anfang',
+                    value: trip.startLocationText ?? '—',
+                  ),
+                  const SizedBox(height: 8),
+                  InfoRow(
+                    label: 'Ende',
+                    value: trip.endLocationText ?? '—',
+                  ),
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }

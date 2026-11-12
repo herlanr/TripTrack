@@ -28,13 +28,25 @@ import '../widgets/trip_summary_dialog.dart';
 /// - Anzeige einer Zusammenfassung der zuletzt beendeten Fahrt.
 class HomeScreen extends StatefulWidget {
   /// Erstellt die HomeScreen-Instanz.
-  const HomeScreen({super.key, this.selectedDriver, this.onTripSaved});
+  const HomeScreen({
+    super.key,
+    this.selectedDriver,
+    this.onTripSaved,
+    this.vehiclesVersion = 0,
+    this.onVehiclesChanged,
+  });
 
   /// Der aktuell angemeldete Fahrer
   final Driver? selectedDriver;
 
   /// Callback beim Speichern einer neu beendeten Fahrt
   final ValueChanged<Trip>? onTripSaved;
+
+  /// Versionszähler zur automatischen Aktualisierung der Fahrzeuge
+  final int vehiclesVersion;
+
+  /// Callback bei Änderungen an Fahrzeugdaten
+  final VoidCallback? onVehiclesChanged;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -65,6 +77,15 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchCurrentLocation();
   }
 
+  @override
+  void didUpdateWidget(HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedDriver != oldWidget.selectedDriver ||
+        widget.vehiclesVersion != oldWidget.vehiclesVersion) {
+      _loadVehicles();
+    }
+  }
+
   /// Lädt die dem aktuellen Fahrer zugeordneten Fahrzeuge und letzten Fahrten aus dem Repository.
   Future<void> _loadVehicles() async {
     final driver = widget.selectedDriver;
@@ -87,6 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
             );
             _startKmController.text =
                 formatKmValue(_selectedVehicle!.currentKm);
+          } else {
+            _selectedVehicle = null;
+            _startKmController.clear();
           }
           if (_lastTrip == null && driverTrips.isNotEmpty) {
             _lastTrip = driverTrips.first;
@@ -146,6 +170,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Prüft die Standortberechtigung und startet die Fahrtaufzeichnung.
   Future<void> _onStartTrip() async {
+    if (_selectedVehicle == null) {
+      _showSnack('Bitte erstelle zuerst ein Fahrzeug in deinem Profil.');
+      return;
+    }
+
     final status = await _locationTracking.checkPermissionStatus();
     if (status != LocationPermissionResult.granted) {
       await _showPermissionRequiredDialog(status);
@@ -291,6 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final double newKm = trip.startKm + trip.distanceKm;
         await _vehicleRepository.updateVehicleKm(vehicle.id, newKm);
         await _loadVehicles();
+        widget.onVehiclesChanged?.call();
       }
 
       _showSnack('Fahrt gespeichert!');
@@ -428,6 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (newKm != null && mounted) {
       await _vehicleRepository.updateVehicleKm(vehicle.id, newKm);
       await _loadVehicles();
+      widget.onVehiclesChanged?.call();
       _showSnack('Kilometerstand auf ${formatKmValue(newKm)} km aktualisiert.');
     }
   }
@@ -475,7 +506,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -501,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onEditKmPressed: _onEditKmPressed,
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
 
               // Action Row Component: Side-by-Side Timer Badge + Start/Stop Button
               HomeActionRow(
@@ -511,12 +543,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: isActive ? _onStopTrip : _onStartTrip,
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               // Bottom Card Component: Letzte Fahrt
-              Expanded(
-                child: LastTripCard(lastTrip: _lastTrip),
-              ),
+              LastTripCard(lastTrip: _lastTrip),
             ],
           ),
         ),

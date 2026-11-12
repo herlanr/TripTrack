@@ -116,6 +116,7 @@ class _EditVehicleDialogState extends State<EditVehicleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
@@ -143,43 +144,41 @@ class _EditVehicleDialogState extends State<EditVehicleDialog> {
             ),
         ],
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _brandController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Marke',
-              ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _brandController,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Marke',
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _modelController,
-              decoration: const InputDecoration(
-                labelText: 'Modell',
-              ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _modelController,
+            decoration: const InputDecoration(
+              labelText: 'Modell',
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _plateController,
-              decoration: const InputDecoration(
-                labelText: 'Kennzeichen',
-              ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _plateController,
+            decoration: const InputDecoration(
+              labelText: 'Kennzeichen',
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _kmController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Aktueller Kilometerstand',
-                suffixText: 'km',
-              ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _kmController,
+            keyboardType:
+                const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(
+              labelText: 'Aktueller Kilometerstand',
+              suffixText: 'km',
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         TextButton(

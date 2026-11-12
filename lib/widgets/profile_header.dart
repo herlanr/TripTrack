@@ -20,35 +20,14 @@ class ProfileHeader extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              const CircleAvatar(
-                radius: 40,
-                backgroundColor: Color(0xFFE8F5E9),
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 48,
-                  color: Color(0xFF2E7D32),
-                ),
-              ),
-              if (driver != null && onEditPressed != null)
-                GestureDetector(
-                  onTap: onEditPressed,
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: AppTheme.primaryGreen,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.edit_rounded,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-            ],
+          const CircleAvatar(
+            radius: 40,
+            backgroundColor: Color(0xFFE8F5E9),
+            child: Icon(
+              Icons.person_rounded,
+              size: 48,
+              color: Color(0xFF2E7D32),
+            ),
           ),
           const SizedBox(height: 12),
           Row(

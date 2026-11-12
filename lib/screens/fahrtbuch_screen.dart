@@ -4,6 +4,7 @@ import '../models/driver.dart';
 import '../models/trip.dart';
 import '../theme/app_theme.dart';
 import '../utils/format.dart';
+import '../widgets/date_filter_bottom_sheet.dart';
 import '../widgets/export_dialog.dart';
 import '../widgets/trip_card.dart';
 
@@ -127,41 +128,14 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     return result;
   }
 
-  /// Öffnet den Datumsbereichs-Picker (Kalender-Pop-Up) zur Auswahl von Start- und Enddatum.
+  /// Öffnet das [DateFilterBottomSheet] zur Auswahl von Schnellauswahls oder Start-/Enddatum.
   Future<void> _pickDateRange() async {
-    final now = DateTime.now();
-    final firstDate = DateTime(2020, 1, 1);
-    final lastDate = DateTime(now.year + 5, 12, 31);
-
-    final DateTimeRange? picked = await showDateRangePicker(
-      context: context,
-      initialDateRange: _selectedDateRange ??
-          DateTimeRange(
-            start: now.subtract(const Duration(days: 30)),
-            end: now,
-          ),
-      firstDate: firstDate,
-      lastDate: lastDate,
-      helpText: 'Datumsbereich auswählen',
-      cancelText: 'ABBRECHEN',
-      confirmText: 'ANWENDEN',
-      saveText: 'ANWENDEN',
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppTheme.primaryGreen,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppTheme.textDark,
-            ),
-          ),
-          child: child!,
-        );
-      },
+    final DateTimeRange? picked = await DateFilterBottomSheet.show(
+      context,
+      initialRange: _selectedDateRange,
     );
 
-    if (picked != null) {
+    if (picked != _selectedDateRange) {
       setState(() {
         _selectedDateRange = picked;
       });

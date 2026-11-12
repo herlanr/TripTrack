@@ -21,13 +21,25 @@ import '../widgets/vehicle_list_card.dart';
 /// - Abmelden / Fahrer wechseln Schaltfläche.
 class ProfileScreen extends StatefulWidget {
   /// Erstellt die ProfileScreen-Instanz.
-  const ProfileScreen({super.key, this.driver, this.onDriverUpdated});
+  const ProfileScreen({
+    super.key,
+    this.driver,
+    this.onDriverUpdated,
+    this.onVehiclesChanged,
+    this.vehiclesVersion = 0,
+  });
 
   /// Der angemeldete Fahrer
   final Driver? driver;
 
   /// Callback bei Aktualisierung des Fahrer-Profils
   final ValueChanged<Driver>? onDriverUpdated;
+
+  /// Callback bei Hinzufügen, Bearbeiten oder Löschen von Fahrzeugen
+  final VoidCallback? onVehiclesChanged;
+
+  /// Versionszähler zur automatischen Aktualisierung der Fahrzeuge
+  final int vehiclesVersion;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -43,6 +55,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _loadVehicles();
+  }
+
+  @override
+  void didUpdateWidget(ProfileScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.driver != oldWidget.driver ||
+        widget.vehiclesVersion != oldWidget.vehiclesVersion) {
+      _loadVehicles();
+    }
   }
 
   /// Lädt die Fahrzeuge des Fahrers aus dem Repository.
@@ -97,6 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (newVehicle != null) {
       await _vehicleRepository.addVehicle(newVehicle);
       await _loadVehicles();
+      widget.onVehiclesChanged?.call();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -120,6 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (updated != null) {
       await _vehicleRepository.updateVehicle(updated);
       await _loadVehicles();
+      widget.onVehiclesChanged?.call();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -156,6 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (confirm == true) {
       await _vehicleRepository.deleteVehicle(vehicle.id);
       await _loadVehicles();
+      widget.onVehiclesChanged?.call();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
