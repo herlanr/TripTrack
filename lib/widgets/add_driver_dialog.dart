@@ -23,7 +23,9 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
     super.dispose();
   }
 
-  /// Öffnet den Datumswähler (DatePicker) zur Auswahl des Geburtsdatums.
+  /// Beschreibung: Öffnet den Datumswähler zur Auswahl des Geburtsdatums.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _pickDateOfBirth() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -36,7 +38,9 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
     }
   }
 
-  /// Validiert die Eingaben und gibt die erstellte [Driver]-Instanz zurück.
+  /// Beschreibung: Validiert die Eingaben und schließt den Dialog mit der neuen Driver-Instanz.
+  /// Eingabe: Keine
+  /// Ausgabe: void
   void _submit() {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
@@ -61,6 +65,9 @@ class _AddDriverDialogState extends State<AddDriverDialog> {
     Navigator.of(context).pop(driver);
   }
 
+  /// Beschreibung: Formatiert ein Datum als String (z. B. "15.09.1995").
+  /// Eingabe: dt (DateTime)
+  /// Ausgabe: String
   String _formatDate(DateTime dt) {
     String two(int n) => n.toString().padLeft(2, '0');
     return '${two(dt.day)}.${two(dt.month)}.${dt.year}';

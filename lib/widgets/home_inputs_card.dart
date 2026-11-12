@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/vehicle.dart';
 import '../theme/app_theme.dart';
 
-/// Eingabebereich oben auf dem Home-Dashboard:
-/// - Angemeldeter Fahrer (schreibgeschützt)
-/// - Fahrzeug-Auswahl-Dropdown
-/// - Kilometerstand (schreibgeschützt mit Bearbeiten-Button rechts)
-/// - Start-Standort (wenn Fahrt aktiv) & Aktueller Standort
+/// Eingabebereich oben auf dem Home-Dashboard (Fahrer, Fahrzeugauswahl, Kilometerstand, Standorte).
 class HomeInputsCard extends StatelessWidget {
   /// Erstellt eine neue HomeInputsCard-Instanz.
   const HomeInputsCard({
@@ -59,7 +55,6 @@ class HomeInputsCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Angemeldeter Fahrer (schreibgeschützt)
         InputDecorator(
           decoration: InputDecoration(
             labelText: 'Fahrer Name',
@@ -78,7 +73,6 @@ class HomeInputsCard extends StatelessWidget {
         ),
         const SizedBox(height: 10),
 
-        // Fahrzeug-Auswahl-Dropdown (aktiv auswählbar vor Fahrtstart)
         if (vehicles.isNotEmpty) ...[
           DropdownButtonFormField<Vehicle>(
             initialValue: selectedVehicle,
@@ -106,7 +100,6 @@ class HomeInputsCard extends StatelessWidget {
           const SizedBox(height: 10),
         ],
 
-        // Kilometerstand (schreibgeschützt, Bearbeiten über Stift-Icon rechts)
         TextField(
           controller: startKmController,
           readOnly: true,
@@ -143,7 +136,6 @@ class HomeInputsCard extends StatelessWidget {
         ),
         const SizedBox(height: 10),
 
-        // Start-Standort (wenn Fahrt aktiv)
         if (isActive && startLocationText != null) ...[
           InputDecorator(
             decoration: InputDecoration(
@@ -168,7 +160,6 @@ class HomeInputsCard extends StatelessWidget {
           const SizedBox(height: 10),
         ],
 
-        // Aktueller Standort (schreibgeschützt)
         InputDecorator(
           decoration: InputDecoration(
             labelText: 'Aktueller Standort',

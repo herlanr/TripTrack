@@ -1,4 +1,4 @@
-/// Der Lebenszyklus-Status einer Fahrt.
+/// Repräsentiert das Datenmodell für den Lebenszyklus-Status einer Fahrt in TripTrack.
 enum TripPhase {
   /// Keine Fahrt ist aktuell aktiv.
   idle,

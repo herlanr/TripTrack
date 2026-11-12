@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Storyboard MVP 1 - TripTrack</title>
+  <style>
+    :root {
+      --primary-green: #2E7D32;
+      --light-green-bg: #E8F5E9;
+      --border-color: #BDBDBD;
+      --text-dark: #212121;
+      --text-muted: #616161;
+      --roadmap-bg: #FAFAFA;
+      --mvp-bg: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      margin: 30px;
+      background-color: #F4F6F8;
+      color: var(--text-dark);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-green);
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-box-mvp {
+      width: 18px;
+      height: 18px;
+      background: var(--light-green-bg);
+      border: 2px solid var(--primary-green);
+      border-radius: 4px;
+    }
+
+    .legend-box-roadmap {
+      width: 18px;
+      height: 18px;
+      background: var(--roadmap-bg);
+      border: 1px dashed var(--border-color);
+      border-radius: 4px;
+    }
+
+    .storyboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .storyboard-table th {
+      background-color: #1B5E20;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 10px;
+      text-align: center;
+      border: 1px solid #144417;
+    }
+
+    .storyboard-table td {
+      border: 1px solid var(--border-color);
+      padding: 12px 10px;
+      vertical-align: top;
+      font-size: 13.5px;
+      line-height: 1.4;
+      text-align: center;
+      height: 52px;
+    }
+
+    /* MVP 1 Styling (In-Scope) */
+    .cell-mvp {
+      background-color: var(--light-green-bg);
+      color: #1B5E20;
+      font-weight: 600;
+      border: 2px solid var(--primary-green) !important;
+      position: relative;
+    }
+
+    .badge-mvp {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background-color: var(--primary-green);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    /* Roadmap Styling (Out-of-Scope / Future) */
+    .cell-roadmap {
+      background-color: var(--roadmap-bg);
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .badge-roadmap {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background-color: #E0E0E0;
+      color: #616161;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    .cell-empty {
+      background-color: #FAFAFA;
+      color: #BDBDBD;
+    }
+
+    /* Custom thick green boundary line between MVP and Roadmap */
+    .border-mvp-bottom {
+      border-bottom: 4px solid var(--primary-green) !important;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Storyboard MVP 1 - TripTrack</h1>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-box-mvp"></div>
+      <span>MVP 1 (Implementierter Funktionsumfang)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box-roadmap"></div>
+      <span>Zukünftige Erweiterungen (Roadmap)</span>
+    </div>
+  </div>
+
+  <table class="storyboard-table">
+    <thead>
+      <tr>
+        <th>Fahrt erfassen</th>
+        <th>Fahrt bearbeiten</th>
+        <th>Fahrten anzeigen</th>
+        <th>Fahrten filtern & suchen</th>
+        <th>Fahrtenbuch exportieren</th>
+        <th>Fahrzeug & Fahrer verwalten</th>
+        <th>Einstellungen & Session ändern</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Reihe 1 -->
+      <tr>
+        <td class="cell-mvp">
+          Manueller Start & Beenden der Fahrt
+          
+        </td>
+        <td class="cell-mvp border-mvp-bottom">
+          Fahrt löschen
+          
+        </td>
+        <td class="cell-mvp">
+          Liste aller vergangenen Fahrten anzeigen
+          
+        </td>
+        <td class="cell-mvp">
+          Nach Datum filtern
+          
+        </td>
+        <td class="cell-mvp">
+          Export als CSV-Datei
+          
+        </td>
+        <td class="cell-mvp">
+          Fahrerprofil anlegen
+          
+        </td>
+        <td class="cell-mvp border-mvp-bottom">
+          Abmelden / Fahrer wechseln (Logout-Guard)
+          
+        </td>
+      </tr>
+
+      <!-- Reihe 2 -->
+      <tr>
+        <td class="cell-mvp">
+          Automatische Adress-Ermittlung via Geocoding
+          
+        </td>
+        <td class="cell-roadmap">
+          Fahrt-Typ festlegen (Dienst / Privat / Arbeitsweg)
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+        <td class="cell-mvp">
+          Detailansicht einer einzelnen Fahrt anzeigen (mit Routenverlauf)
+          
+        </td>
+        <td class="cell-mvp">
+          Nach Ort suchen
+          
+        </td>
+        <td class="cell-mvp">
+          Export als PDF-Datei
+          
+        </td>
+        <td class="cell-mvp">
+          Fahrerprofil bearbeiten
+          
+        </td>
+        <td class="cell-roadmap">
+          Dark Mode aktivieren
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+      </tr>
+
+      <!-- Reihe 3 -->
+      <tr>
+        <td class="cell-mvp">
+          Spezifisches Auto auswählen
+          
+        </td>
+        <td class="cell-roadmap">
+          Foto / Tankbeleg zur Fahrt anhängen
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+        <td class="cell-mvp border-mvp-bottom">
+          Letzte Fahrt anzeigen (Home-Karte)
+          
+        </td>
+        <td class="cell-mvp border-mvp-bottom">
+          Nach Kriterien sortieren (Datum, Strecke)
+          
+        </td>
+        <td class="cell-mvp border-mvp-bottom">
+          Export nach Fahrzeug filtern
+          
+        </td>
+        <td class="cell-mvp">
+          Fahrer löschen
+          
+        </td>
+        <td class="cell-roadmap">
+          Sprache auswählen (Deutsch / Englisch)
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+      </tr>
+
+      <!-- Reihe 4 -->
+      <tr>
+        <td class="cell-mvp">
+          Kilometerstand anpassen / eingeben
+          
+        </td>
+        <td class="cell-roadmap">
+          Zweck & Ansprechpartner / Kunde eingeben
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+        <td class="cell-empty">—</td>
+        <td class="cell-roadmap">
+          Nach Fahrt-Typ filtern (Dienst/Privat)
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+        <td class="cell-empty">—</td>
+        <td class="cell-mvp">
+          Fahrzeug anlegen
+          
+        </td>
+        <td class="cell-roadmap">
+          Cloud-Backup erstellen / sichern (AWS)
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+      </tr>
+
+      <!-- Reihe 5 -->
+      <tr>
+        <td class="cell-mvp border-mvp-bottom">
+          Live-GPS-Routenaufzeichnung (Zeitleiste)
+          
+        </td>
+        <td class="cell-roadmap">
+          Kilometerstand nachträglich korrigieren
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-mvp">
+          Fahrzeugdaten & KM-Stand bearbeiten
+          
+        </td>
+        <td class="cell-empty">—</td>
+      </tr>
+
+      <!-- Reihe 6 -->
+      <tr>
+        <td class="cell-roadmap">
+          Kilometerstand-Erkennung über KI / API (AWS)
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-mvp">
+          Fahrzeug löschen
+          
+        </td>
+        <td class="cell-empty">—</td>
+      </tr>
+
+      <!-- Reihe 7 -->
+      <tr>
+        <td class="cell-roadmap">
+          Automatische Fahrterkennung (Bluetooth / GPS)
+          <br><span class="badge-roadmap">Zukunft</span>
+        </td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-empty">—</td>
+        <td class="cell-mvp border-mvp-bottom">
+          Start-Kilometerstand festlegen
+          
+        </td>
+        <td class="cell-empty">—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    TripTrack App • Storyboard MVP 1
+  </footer>
+</div>
+
+</body>
+</html>

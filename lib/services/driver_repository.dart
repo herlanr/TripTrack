@@ -5,12 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/driver.dart';
 
-/// Kapselt die lokale Speicherung von Fahrer-Profilen in [SharedPreferences].
-///
-/// Liest und schreibt direkt in [SharedPreferences] ohne Instanz-Cache,
-/// um Synchronisationsprobleme zwischen verschiedenen Screen-Instanzen zu vermeiden.
+/// Kapselt die lokale Speicherung von Fahrer-Profilen in SharedPreferences.
 class DriverRepository {
-  /// Maximale Anzahl erlaubter Fahrer-Profile
+  /// Maximale Anzahl erlaubter Fahrer-Profile (4)
   static const int maxProfiles = 4;
 
   /// Schlüssel für die SharedPreferences-Speicherung
@@ -25,9 +22,8 @@ class DriverRepository {
   );
 
   /// Beschreibung: Liest alle Fahrer-Profile direkt aus dem lokalen Speicher.
-  /// Autor: @herlanr
   /// Eingabe: Keine
-  /// Ausgabe: Liste von Fahrer-Instanzen
+  /// Ausgabe: `Future<List<Driver>>`
   Future<List<Driver>> _loadAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -47,9 +43,8 @@ class DriverRepository {
   }
 
   /// Beschreibung: Schreibt die komplette Fahrerliste als JSON-String in den Speicher.
-  /// Autor: @herlanr
-  /// Eingabe: drivers (List of Driver)
-  /// Ausgabe: Keine
+  /// Eingabe: drivers (`List<Driver>`)
+  /// Ausgabe: `Future<void>`
   Future<void> _saveAll(List<Driver> drivers) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -63,11 +58,9 @@ class DriverRepository {
     }
   }
 
-  /// Beschreibung: Lädt alle gespeicherten Fahrer aus dem lokalen Speicher.
-  /// Erstellt automatisch das Test-Fahrerprofil, falls der Speicher komplett leer ist.
-  /// Autor: @herlanr
+  /// Beschreibung: Lädt alle gespeicherten Fahrer aus dem lokalen Speicher und legt ein Test-Profil an, falls der Speicher leer ist.
   /// Eingabe: Keine
-  /// Ausgabe: Liste von Fahrer-Instanzen
+  /// Ausgabe: `Future<List<Driver>>`
   Future<List<Driver>> getDrivers() async {
     final drivers = await _loadAll();
 
@@ -80,10 +73,9 @@ class DriverRepository {
     return drivers;
   }
 
-  /// Beschreibung: Fügt ein neues Fahrer-Profil hinzu. Wirft einen [StateError], wenn das Limit (4) erreicht ist.
-  /// Autor: @herlanr
+  /// Beschreibung: Fügt ein neues Fahrer-Profil hinzu. Wirft einen StateError, wenn das Limit erreicht ist.
   /// Eingabe: driver ([Driver])
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> addDriver(Driver driver) async {
     final drivers = await _loadAll();
 
@@ -98,9 +90,8 @@ class DriverRepository {
   }
 
   /// Beschreibung: Löscht ein Fahrer-Profil anhand seiner ID.
-  /// Autor: @herlanr
   /// Eingabe: driverId (String)
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> deleteDriver(String driverId) async {
     final drivers = await _loadAll();
     drivers.removeWhere((d) => d.id == driverId);
@@ -108,9 +99,8 @@ class DriverRepository {
   }
 
   /// Beschreibung: Aktualisiert ein bestehendes Fahrer-Profil im lokalen Speicher.
-  /// Autor: @herlanr
   /// Eingabe: driver ([Driver])
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> updateDriver(Driver driver) async {
     final drivers = await _loadAll();
     final index = drivers.indexWhere((d) => d.id == driver.id);

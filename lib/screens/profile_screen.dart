@@ -13,12 +13,6 @@ import '../widgets/profile_header.dart';
 import '../widgets/vehicle_list_card.dart';
 
 /// Die Profil- und Einstellungsseite ("Profile") für den angemeldeten Fahrer.
-///
-/// Bietet folgende Kernfunktionen:
-/// - Anzeige und Bearbeiten des Fahrer-Avatars, Namens und Geburtsdatums.
-/// - Auflistung und Bearbeiten/Löschen aller zugeordneten Fahrzeuge inklusive Tacho-Kilometerstand.
-/// - Hinzufügen neuer Fahrzeuge über das Plus-Symbol.
-/// - Abmelden / Fahrer wechseln Schaltfläche.
 class ProfileScreen extends StatefulWidget {
   /// Erstellt die ProfileScreen-Instanz.
   const ProfileScreen({
@@ -66,7 +60,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Lädt die Fahrzeuge des Fahrers aus dem Repository.
+  /// Beschreibung: Lädt die Fahrzeuge des aktuell angemeldeten Fahrers aus dem VehicleRepository.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _loadVehicles() async {
     final driver = widget.driver;
     if (driver != null) {
@@ -82,7 +78,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Öffnet den [EditDriverDialog] zum Bearbeiten des Fahrer-Profils.
+  /// Beschreibung: Öffnet den EditDriverDialog zum Bearbeiten der Fahrerdaten.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _onEditDriverPressed() async {
     final driver = widget.driver;
     if (driver == null) return;
@@ -105,7 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Öffnet den [AddVehicleDialog] zum Hinzufügen eines neuen Fahrzeugs.
+  /// Beschreibung: Öffnet den AddVehicleDialog zum Hinzufügen eines neuen Fahrzeugs.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _onAddVehiclePressed() async {
     final driver = widget.driver;
     if (driver == null) return;
@@ -129,7 +129,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Öffnet den [EditVehicleDialog] zum Bearbeiten eines Fahrzeugs.
+  /// Beschreibung: Öffnet den EditVehicleDialog zum Bearbeiten eines Fahrzeugs.
+  /// Eingabe: vehicle ([Vehicle])
+  /// Ausgabe: `Future<void>`
   Future<void> _onEditVehiclePressed(Vehicle vehicle) async {
     final Vehicle? updated = await showDialog<Vehicle>(
       context: context,
@@ -153,7 +155,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Löscht ein Fahrzeug nach Bestätigung.
+  /// Beschreibung: Löscht ein Fahrzeug nach Bestätigung aus dem Repository.
+  /// Eingabe: vehicle ([Vehicle])
+  /// Ausgabe: `Future<void>`
   Future<void> _onDeleteVehiclePressed(Vehicle vehicle) async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -208,7 +212,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Driver Avatar Header Component
           ProfileHeader(
             driver: driver,
             onEditPressed: _onEditDriverPressed,
@@ -216,7 +219,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 24),
 
-          // Vehicles Section Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -236,7 +238,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 8),
 
-          // Vehicle List Component
           VehicleListCard(
             vehicles: _vehicles,
             loading: _loading,
@@ -247,7 +248,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 24),
 
-          // Logout Action Button
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),

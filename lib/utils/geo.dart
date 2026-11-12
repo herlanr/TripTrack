@@ -1,23 +1,18 @@
 import 'dart:math';
 
-/// Calculates the great-circle distance between two GPS coordinates in kilometers
-/// using the Haversine formula.
-///
-/// Explanation for University Presentation:
-/// The Haversine formula calculates the shortest distance over the Earth's spherical surface
-/// given two pairs of latitude and longitude (in degrees).
-///
-/// Formula:
-/// a = sin²(Δlat/2) + cos(lat1) * cos(lat2) * sin²(Δlon/2)
-/// c = 2 * atan2(√a, √(1-a)) = 2 * asin(√a)
-/// distance = R * c  (where R = Earth's radius ≈ 6371 km)
+/// Berechnet die Orthodrome-Distanz (Großkreisdistanz) zwischen zwei GPS-Koordinaten in Kilometern über die Haversine-Formel.
+
+/// Beschreibung: Berechnet die Entfernung zwischen zwei GPS-Punkten in Kilometern.
+/// Eingabe: latitude1 (double), longitude1 (double), latitude2 (double), longitude2 (double)
+/// Ausgabe: double
 double haversineDistanceKm({
   required double latitude1,
   required double longitude1,
   required double latitude2,
   required double longitude2,
 }) {
-  const double earthRadiusKm = 6371.0088; // Earth's mean radius in km
+  /// Mittlerer Erdradius in Kilometern
+  const double earthRadiusKm = 6371.0088;
 
   final double dLat = _toRadians(latitude2 - latitude1);
   final double dLon = _toRadians(longitude2 - longitude1);
@@ -28,11 +23,12 @@ double haversineDistanceKm({
           sin(dLon / 2) *
           sin(dLon / 2);
 
-  // Compute central angle c = 2 * asin(sqrt(a))
   final double c = 2 * asin(min(1.0, sqrt(a)));
 
   return earthRadiusKm * c;
 }
 
-/// Converts degrees to radians: radians = degrees * (π / 180)
+/// Beschreibung: Rechnet Gradmaß in Bogenmaß (Radiant) um.
+/// Eingabe: degrees (double)
+/// Ausgabe: double
 double _toRadians(double degrees) => degrees * pi / 180;

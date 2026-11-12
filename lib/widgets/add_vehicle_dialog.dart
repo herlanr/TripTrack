@@ -29,7 +29,9 @@ class _AddVehicleDialogState extends State<AddVehicleDialog> {
     super.dispose();
   }
 
-  /// Validiert die Eingaben und gibt die erstellte [Vehicle]-Instanz zurück.
+  /// Beschreibung: Validiert die Eingaben und schließt den Dialog mit der erstellten Vehicle-Instanz.
+  /// Eingabe: Keine
+  /// Ausgabe: void
   void _submit() {
     final brand = _brandController.text.trim();
     final model = _modelController.text.trim();

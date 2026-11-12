@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// Nebeneinanderliegende Aktionszeile auf dem Home-Screen mit Stoppuhr-Badge
-/// und dem Haupt-Aktionsbutton ("Fahrt Starten" / "Fahrt Beenden").
+/// Nebeneinanderliegende Aktionszeile auf dem Home-Screen mit Stoppuhr-Badge und Start/Stop-Button.
 class HomeActionRow extends StatelessWidget {
   /// Erstellt eine neue HomeActionRow-Instanz.
   const HomeActionRow({
@@ -30,7 +29,6 @@ class HomeActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Stoppuhr-Badge
         Container(
           height: 58,
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -71,7 +69,6 @@ class HomeActionRow extends StatelessWidget {
         ),
         const SizedBox(width: 12),
 
-        // Aktionsbutton ("Fahrt Starten" / "Fahrt Beenden")
         Expanded(
           child: SizedBox(
             height: 58,

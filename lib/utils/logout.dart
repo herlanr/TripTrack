@@ -1,18 +1,20 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
+
 import '../screens/welcome_screen.dart';
 import '../theme/app_theme.dart';
 
+/// Hilfsfunktion zur Anzeige des Logout-Bestätigungsdialogs und Navigation zum WelcomeScreen.
 
-
-Future<void> onLogoutPressed(BuildContext context) async{
+/// Beschreibung: Zeigt einen Bestätigungsdialog zum Abmelden und führt bei Zustimmung den Logout durch.
+/// Eingabe: context (BuildContext)
+/// Ausgabe: `Future<void>`
+Future<void> onLogoutPressed(BuildContext context) async {
   final bool? confirm = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-
       ),
       title: const Row(
         children: [
@@ -37,7 +39,7 @@ Future<void> onLogoutPressed(BuildContext context) async{
       ],
     ),
   );
-  if (confirm == true && context.mounted){
+  if (confirm == true && context.mounted) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const WelcomeScreen()),
     );

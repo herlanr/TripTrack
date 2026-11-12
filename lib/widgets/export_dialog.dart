@@ -21,7 +21,9 @@ class ExportDialog extends StatefulWidget {
   /// Optionale Fahrer-ID zur Fahrzeugabfrage
   final String? driverId;
 
-  /// Hilfsmethode zum Öffnen des Export-Dialogs.
+  /// Beschreibung: Hilfsmethode zum Öffnen des Export-Dialogs.
+  /// Eingabe: context (BuildContext), trips (List<[Trip]>), driverId (String?)
+  /// Ausgabe: `Future<void>`
   static Future<void> show(
     BuildContext context, {
     required List<Trip> trips,
@@ -42,7 +44,7 @@ class ExportDialog extends StatefulWidget {
 
 class _ExportDialogState extends State<ExportDialog> {
   final VehicleRepository _vehicleRepository = VehicleRepository();
-  String _selectedFormat = 'csv'; // Standard: .csv (Excel/Tabelle)
+  String _selectedFormat = 'csv';
   Vehicle? _selectedVehicle;
   List<Vehicle> _vehicles = [];
   bool _exporting = false;
@@ -53,6 +55,9 @@ class _ExportDialogState extends State<ExportDialog> {
     _loadVehicles();
   }
 
+  /// Beschreibung: Lädt die Fahrzeuge des Fahrers für das Auswahl-Dropdown.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _loadVehicles() async {
     final driverId = widget.driverId;
     if (driverId != null) {
@@ -65,7 +70,9 @@ class _ExportDialogState extends State<ExportDialog> {
     }
   }
 
-  /// Stößt den Export über den [ExportService] an.
+  /// Beschreibung: Führt den Export der Fahrten über den ExportService aus.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _onExportPressed() async {
     if (widget.trips.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -120,7 +127,6 @@ class _ExportDialogState extends State<ExportDialog> {
           children: [
             const SizedBox(height: 8),
 
-            // Formatauswahl (.csv oder pdf)
             RadioGroup<String>(
               groupValue: _selectedFormat,
               onChanged: (String? val) {
@@ -146,7 +152,6 @@ class _ExportDialogState extends State<ExportDialog> {
 
             const SizedBox(height: 16),
 
-            // Fahrzeugauswahl (Filter)
             DropdownButtonFormField<Vehicle?>(
               initialValue: _selectedVehicle,
               decoration: const InputDecoration(

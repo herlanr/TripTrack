@@ -50,7 +50,9 @@ class _EditVehicleDialogState extends State<EditVehicleDialog> {
     super.dispose();
   }
 
-  /// Validiert die Eingaben und gibt die aktualisierte [Vehicle]-Instanz zurück.
+  /// Beschreibung: Validiert die Eingaben und schließt den Dialog mit den aktualisierten Vehicle-Daten.
+  /// Eingabe: Keine
+  /// Ausgabe: void
   void _submit() {
     final brand = _brandController.text.trim();
     final model = _modelController.text.trim();
@@ -82,7 +84,9 @@ class _EditVehicleDialogState extends State<EditVehicleDialog> {
     Navigator.of(context).pop(updatedVehicle);
   }
 
-  /// Zeigt einen Bestätigungsdialog zum Löschen des Fahrzeugs.
+  /// Beschreibung: Zeigt einen Bestätigungsdialog zum Löschen des Fahrzeugs.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _confirmDelete() async {
     final bool? confirm = await showDialog<bool>(
       context: context,

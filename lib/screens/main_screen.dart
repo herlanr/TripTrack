@@ -8,11 +8,6 @@ import 'home_screen.dart';
 import 'profile_screen.dart';
 
 /// Die Haupt-Navigationsstruktur der Anwendung mit unterer Navigationsleiste (Bottom Navigation Bar).
-///
-/// Verwaltet die 3 Haupt-Tabs:
-/// 1. Tab "Fahren": [HomeScreen]
-/// 2. Tab "Fahrtbuch": [FahrtbuchScreen]
-/// 3. Tab "Profile": [ProfileScreen]
 class MainScreen extends StatefulWidget {
   /// Erstellt die MainScreen-Instanz mit dem ausgewählten Fahrer.
   const MainScreen({super.key, this.selectedDriver});
@@ -46,7 +41,9 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  /// Lädt alle gespeicherten Fahrten aus dem [TripRepository].
+  /// Beschreibung: Lädt alle gespeicherten Fahrten aus dem TripRepository.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _loadSavedTrips() async {
     final trips = await _tripRepository.getTrips();
     if (mounted) {
@@ -56,13 +53,17 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  /// Callback beim Speichern einer neuen Fahrt
+  /// Beschreibung: Speichert eine neu beendete Fahrt und lädt die Fahrtenliste neu.
+  /// Eingabe: trip ([Trip])
+  /// Ausgabe: `Future<void>`
   Future<void> _onTripSaved(Trip trip) async {
     await _tripRepository.saveTrip(trip);
     await _loadSavedTrips();
   }
 
-  /// Callback beim Löschen einer Fahrt
+  /// Beschreibung: Löscht eine Fahrt aus dem Speicher und lädt die Liste neu.
+  /// Eingabe: trip ([Trip])
+  /// Ausgabe: `Future<void>`
   Future<void> _onTripDeleted(Trip trip) async {
     await _tripRepository.deleteTrip(trip.id);
     await _loadSavedTrips();

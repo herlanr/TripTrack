@@ -6,9 +6,6 @@ import '../utils/format.dart';
 import 'trip_summary_dialog.dart';
 
 /// Kartenelement zur Darstellung eines Fahrtenbuch-Eintrags in der Liste.
-/// Layout gemäß Skizze:
-/// - Oben: "Start -> Ziel" & Dauer (z. B. "30min")
-/// - Unten: "23 km   11.09.2026"
 class TripCard extends StatelessWidget {
   /// Erstellt eine neue TripCard-Instanz.
   const TripCard({
@@ -22,6 +19,26 @@ class TripCard extends StatelessWidget {
 
   /// Callback beim Löschen der Fahrt
   final ValueChanged<Trip>? onDeleteTrip;
+
+  /// Beschreibung: Kürzt den Ortsnamen für die kompakte Kartenanzeige.
+  /// Eingabe: text (String?)
+  /// Ausgabe: String
+  String _shortenLocation(String? text) {
+    if (text == null || text.isEmpty) return '—';
+    final parts = text.split(',');
+    if (parts.length > 1) {
+      return parts.last.trim();
+    }
+    return text.trim();
+  }
+
+  /// Beschreibung: Formatiert das Datum kurz (z. B. "11.09.2026").
+  /// Eingabe: dt (DateTime)
+  /// Ausgabe: String
+  String _formatDateShort(DateTime dt) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${two(dt.day)}.${two(dt.month)}.${dt.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,19 +123,5 @@ class TripCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _shortenLocation(String? text) {
-    if (text == null || text.isEmpty) return '—';
-    final parts = text.split(',');
-    if (parts.length > 1) {
-      return parts.last.trim();
-    }
-    return text.trim();
-  }
-
-  String _formatDateShort(DateTime dt) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(dt.day)}.${two(dt.month)}.${dt.year}';
   }
 }

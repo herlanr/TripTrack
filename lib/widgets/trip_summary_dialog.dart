@@ -6,10 +6,7 @@ import '../utils/format.dart';
 import 'info_row.dart';
 import 'route_list.dart';
 
-/// Material 3 Dialog zur Anzeige der Fahrt-Zusammenfassung.
-/// Unterstützt zwei Modi:
-/// - `isReadOnly == false`: Frisch beendete Fahrt auf Home (Verwerfen / Speichern).
-/// - `isReadOnly == true`: Gespeicherte Fahrt im Fahrtbuch (Schließen-X oben rechts, Fahrt löschen unten).
+/// Dialog zur Anzeige der Fahrt-Zusammenfassung und des Routenverlaufs.
 class TripSummaryDialog extends StatelessWidget {
   /// Erstellt eine neue TripSummaryDialog-Instanz.
   const TripSummaryDialog({
@@ -28,7 +25,9 @@ class TripSummaryDialog extends StatelessWidget {
   /// Callback beim Bestätigen des Löschens
   final VoidCallback? onDelete;
 
-  /// Öffnet den Zusammenfassungs-Dialog.
+  /// Beschreibung: Öffnet den Zusammenfassungs-Dialog.
+  /// Eingabe: context (BuildContext), trip ([Trip]), isReadOnly (bool), onDelete (VoidCallback?)
+  /// Ausgabe: `Future<bool?>`
   static Future<bool?> show(
     BuildContext context, {
     required Trip trip,
@@ -46,6 +45,9 @@ class TripSummaryDialog extends StatelessWidget {
     );
   }
 
+  /// Beschreibung: Zeigt eine Sicherheitsabfrage zum Löschen der Fahrt.
+  /// Eingabe: context (BuildContext)
+  /// Ausgabe: `Future<void>`
   Future<void> _confirmDelete(BuildContext context) async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -111,7 +113,6 @@ class TripSummaryDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Strecke & Dauer Badges
               Row(
                 children: [
                   Expanded(
@@ -133,7 +134,6 @@ class TripSummaryDialog extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Fahrtdetails
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -172,7 +172,6 @@ class TripSummaryDialog extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Routenverlauf
               const Text(
                 'Routenverlauf (GPS-Punkte)',
                 style: TextStyle(

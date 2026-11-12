@@ -8,15 +8,14 @@ import '../models/trip.dart';
 import '../models/vehicle.dart';
 import '../utils/format.dart';
 
-/// SERVICE PATTERN IMPLEMENTATION (Export-Dienst)
-///
-/// Bietet Funktionen zum Exportieren von Fahrtenbuch-Einträgen in das CSV-
-/// oder PDF-Format und öffnet das native Share-Menü des Betriebssystems.
+/// Dienst zum Exportieren von Fahrtenbuch-Einträgen in das CSV- oder PDF-Format inklusive Share-Funktion.
 class ExportService {
-  /// Generiert das angeforderte Dateiformat (.csv oder pdf) und öffnet das Teilen-Menü.
+  /// Beschreibung: Generiert das angeforderte Dateiformat (.csv oder pdf) und öffnet das Teilen-Menü.
+  /// Eingabe: trips (`List<Trip>`), format (String), vehicleFilter ([Vehicle]?)
+  /// Ausgabe: `Future<void>`
   static Future<void> exportTrips({
     required List<Trip> trips,
-    required String format, // 'csv' oder 'pdf'
+    required String format,
     Vehicle? vehicleFilter,
   }) async {
     final filteredTrips = vehicleFilter != null
@@ -53,7 +52,9 @@ class ExportService {
     );
   }
 
-  /// Generiert ein formatiertes PDF-Dokument mit Tabellenstruktur über das [pdf]-Paket.
+  /// Beschreibung: Generiert ein formatiertes PDF-Dokument mit Tabellenstruktur für die Fahrtenliste.
+  /// Eingabe: trips (`List<Trip>`)
+  /// Ausgabe: `Future<Uint8List>`
   static Future<Uint8List> _generatePdf(List<Trip> trips) async {
     final pdf = pw.Document();
 
@@ -132,7 +133,9 @@ class ExportService {
     return pdf.save();
   }
 
-  /// Generiert eine kommagetrennte CSV-Zeichenkette aus den Fahrtenbuch-Einträgen.
+  /// Beschreibung: Generiert eine kommagetrennte CSV-Zeichenkette aus den Fahrtenbuch-Einträgen.
+  /// Eingabe: trips (`List<Trip>`)
+  /// Ausgabe: String
   static String _generateCsv(List<Trip> trips) {
     final List<List<dynamic>> rows = [
       [

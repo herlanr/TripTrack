@@ -6,20 +6,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/mock_trips.dart';
 import '../models/trip.dart';
 
-/// REPOSITORY PATTERN IMPLEMENTATION (Fahrtenbuch-Datenhaltung)
-///
-/// Kapselt die dauerhafte Speicherung von beendeten Fahrtenbuch-Einträgen in [SharedPreferences].
-/// Jeder Eintrag speichert Metadaten, Orte, Strecken, Dauer und die vollständige GPS-Routenliste (`routePoints`).
+/// Kapselt die dauerhafte Speicherung von beendeten Fahrtenbuch-Einträgen in SharedPreferences.
 class TripRepository {
+  /// Schlüssel für die SharedPreferences-Speicherung
   static const String _prefsKey = 'triptrack_saved_trips_v1';
 
   /// Erste Beispielfahrt für Schnelltests
   static final Trip defaultTestTrip = mockTrips.first;
 
   /// Beschreibung: Liest alle gespeicherten Fahrten direkt aus dem lokalen Speicher.
-  /// Autor: @herlanr
   /// Eingabe: Keine
-  /// Ausgabe: Liste von Trip-Instanzen
+  /// Ausgabe: `Future<List<Trip>>`
   Future<List<Trip>> _loadAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -39,9 +36,8 @@ class TripRepository {
   }
 
   /// Beschreibung: Schreibt die komplette Fahrtenliste als JSON-String in den Speicher.
-  /// Autor: @herlanr
-  /// Eingabe: trips (List of Trip)
-  /// Ausgabe: Keine
+  /// Eingabe: trips (`List<Trip>`)
+  /// Ausgabe: `Future<void>`
   Future<void> _saveAll(List<Trip> trips) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -55,11 +51,9 @@ class TripRepository {
     }
   }
 
-  /// Beschreibung: Lädt alle gespeicherten Fahrten aus dem lokalen Speicher.
-  /// Befüllt automatisch die 10 Mock-Fahrten aus [mockTrips], falls der Speicher komplett leer ist.
-  /// Autor: @herlanr
+  /// Beschreibung: Lädt alle gespeicherten Fahrten aus dem lokalen Speicher und befüllt Mock-Fahrten, falls leer.
   /// Eingabe: Keine
-  /// Ausgabe: Liste von Trip-Instanzen
+  /// Ausgabe: `Future<List<Trip>>`
   Future<List<Trip>> getTrips() async {
     final trips = await _loadAll();
 
@@ -72,9 +66,8 @@ class TripRepository {
   }
 
   /// Beschreibung: Speichert eine neu beendete Fahrt dauerhaft im lokalen Speicher.
-  /// Autor: @herlanr
   /// Eingabe: trip ([Trip])
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> saveTrip(Trip trip) async {
     final trips = await _loadAll();
     trips.insert(0, trip); // Neueste Fahrt zuerst
@@ -82,9 +75,8 @@ class TripRepository {
   }
 
   /// Beschreibung: Löscht einen Fahrtenbuch-Eintrag anhand seiner ID.
-  /// Autor: @herlanr
   /// Eingabe: tripId (String)
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> deleteTrip(String tripId) async {
     final trips = await _loadAll();
     trips.removeWhere((t) => t.id == tripId);

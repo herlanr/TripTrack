@@ -5,13 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/vehicle.dart';
 
-/// Kapselt die lokale Speicherung von Fahrzeugen in [SharedPreferences].
-///
-/// Alle Fahrzeuge liegen als eine JSON-Liste unter einem einzigen Schlüssel.
-/// Jede Methode liest die Liste, ändert sie und schreibt sie zurück.
-/// Es gibt bewusst keinen Zwischenspeicher: So sehen alle Instanzen
-/// (z. B. in verschiedenen Screens) immer dieselben Daten.
+/// Kapselt die lokale Speicherung von Fahrzeugen in SharedPreferences.
 class VehicleRepository {
+  /// Schlüssel für die SharedPreferences-Speicherung
   static const String _prefsKey = 'triptrack_vehicles_v1';
 
   /// Standardmäßiges Test-Fahrzeug (Volkswagen Golf VIII)
@@ -25,9 +21,8 @@ class VehicleRepository {
   );
 
   /// Beschreibung: Liest alle Fahrzeuge direkt aus dem lokalen Speicher.
-  /// Autor: @herlanr
   /// Eingabe: Keine
-  /// Ausgabe: Liste von Fahrzeug-Instanzen
+  /// Ausgabe: `Future<List<Vehicle>>`
   Future<List<Vehicle>> _loadAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -47,9 +42,8 @@ class VehicleRepository {
   }
 
   /// Beschreibung: Schreibt die komplette Fahrzeugliste als JSON-String in den Speicher.
-  /// Autor: @herlanr
-  /// Eingabe: vehicles (List of Vehicle)
-  /// Ausgabe: Keine
+  /// Eingabe: vehicles (`List<Vehicle>`)
+  /// Ausgabe: `Future<void>`
   Future<void> _saveAll(List<Vehicle> vehicles) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -64,10 +58,8 @@ class VehicleRepository {
   }
 
   /// Beschreibung: Gibt alle Fahrzeuge zurück, die zu einem bestimmten Fahrer gehören.
-  /// Erstellt automatisch das Test-Fahrzeug (Golf VIII), falls der Test-Fahrer noch kein Fahrzeug hat.
-  /// Autor: @herlanr
   /// Eingabe: driverId (String)
-  /// Ausgabe: Liste von Fahrzeug-Instanzen
+  /// Ausgabe: `Future<List<Vehicle>>`
   Future<List<Vehicle>> getVehiclesForDriver(String driverId) async {
     final all = await _loadAll();
 
@@ -82,9 +74,8 @@ class VehicleRepository {
   }
 
   /// Beschreibung: Fügt ein neues Fahrzeug hinzu und speichert es lokal.
-  /// Autor: @herlanr
   /// Eingabe: vehicle ([Vehicle])
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> addVehicle(Vehicle vehicle) async {
     final all = await _loadAll();
     all.add(vehicle);
@@ -92,9 +83,8 @@ class VehicleRepository {
   }
 
   /// Beschreibung: Aktualisiert den Tacho-Stand eines bestimmten Fahrzeugs.
-  /// Autor: @herlanr
   /// Eingabe: vehicleId (String), newKm (double)
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> updateVehicleKm(String vehicleId, double newKm) async {
     final all = await _loadAll();
     final index = all.indexWhere((v) => v.id == vehicleId);
@@ -104,9 +94,8 @@ class VehicleRepository {
   }
 
   /// Beschreibung: Aktualisiert die Daten eines bestehenden Fahrzeugs.
-  /// Autor: @herlanr
   /// Eingabe: vehicle ([Vehicle])
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> updateVehicle(Vehicle vehicle) async {
     final all = await _loadAll();
     final index = all.indexWhere((v) => v.id == vehicle.id);
@@ -116,9 +105,8 @@ class VehicleRepository {
   }
 
   /// Beschreibung: Löscht ein Fahrzeug anhand seiner ID.
-  /// Autor: @herlanr
   /// Eingabe: vehicleId (String)
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> deleteVehicle(String vehicleId) async {
     final all = await _loadAll();
     all.removeWhere((v) => v.id == vehicleId);
@@ -126,9 +114,8 @@ class VehicleRepository {
   }
 
   /// Beschreibung: Löscht alle Fahrzeuge eines bestimmten Fahrers.
-  /// Autor: @herlanr
   /// Eingabe: driverId (String)
-  /// Ausgabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> deleteVehiclesForDriver(String driverId) async {
     final all = await _loadAll();
     all.removeWhere((v) => v.driverId == driverId);

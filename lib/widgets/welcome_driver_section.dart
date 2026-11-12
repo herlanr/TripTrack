@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../models/driver.dart';
 import '../theme/app_theme.dart';
 
-/// Sub-widget rendering the driver radio selection list or empty state container.
+/// Bereich auf dem WelcomeScreen zur Auswahl oder Verwaltung von Fahrer-Profilen.
 class WelcomeDriverSection extends StatelessWidget {
+  /// Erstellt eine neue WelcomeDriverSection-Instanz.
   const WelcomeDriverSection({
     super.key,
     required this.loading,
@@ -14,12 +15,24 @@ class WelcomeDriverSection extends StatelessWidget {
     required this.onDeleteDriver,
   });
 
+  /// Lade-Status der Fahrertabelle
   final bool loading;
+
+  /// Liste aller Fahrer-Profile
   final List<Driver> drivers;
+
+  /// Aktuell ausgewählter Fahrer
   final Driver? selectedDriver;
+
+  /// Callback bei Änderung der Fahrerauswahl
   final ValueChanged<Driver?> onDriverSelected;
+
+  /// Callback beim Löschen eines Fahrers
   final ValueChanged<Driver> onDeleteDriver;
 
+  /// Beschreibung: Formatiert ein Datum kurz als String (z. B. "15.09.1990").
+  /// Eingabe: dt (DateTime)
+  /// Ausgabe: String
   String _formatDate(DateTime dt) {
     String two(int n) => n.toString().padLeft(2, '0');
     return '${two(dt.day)}.${two(dt.month)}.${dt.year}';
@@ -44,7 +57,7 @@ class WelcomeDriverSection extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Kein Eintrag vorhanden.\nBitte neu Fahrer einfügen.',
+                'Kein Eintrag vorhanden.\nBitte neuen Fahrer einfügen.',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade700,

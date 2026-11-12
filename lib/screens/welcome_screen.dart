@@ -10,15 +10,9 @@ import '../widgets/add_vehicle_dialog.dart';
 import '../widgets/welcome_driver_section.dart';
 import 'main_screen.dart';
 
-/// Der Begrüßungsbildschirm ("Begrüßung") der Anwendung.
-///
-/// Aufgaben dieser Seite:
-/// - Anzeige aller gespeicherten Fahrer-Profile zur Auswahl per Radio-Button.
-/// - Begrenzung auf maximal 4 Fahrer-Profile gemäß Anforderung.
-/// - Durchführung des 2-stufigen Registrierungsprozesses für neue Fahrer (Fahrer + Pflicht-Fahrzeug).
-/// - Weiterleitung zum Haupt-Dashboard ([MainScreen]) mit dem ausgewählten Fahrer.
+/// Der Begrüßungsbildschirm ("Begrüßung") der Anwendung zur Fahrerauswahl und -registrierung.
 class WelcomeScreen extends StatefulWidget {
-
+  /// Erstellt die WelcomeScreen-Instanz.
   const WelcomeScreen({super.key});
 
   @override
@@ -39,8 +33,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     _loadDrivers();
   }
 
-  /// Lädt alle Fahrer-Profile aus dem [DriverRepository]
-  /// und wählt standardmäßig den ersten Fahrer aus der Liste aus.
+  /// Beschreibung: Lädt alle Fahrer-Profile aus dem DriverRepository.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _loadDrivers() async {
     setState(() => _loading = true);
     final drivers = await _driverRepository.getDrivers();
@@ -57,11 +52,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
   }
 
-  /// Startet den Vorgang zum Hinzufügen eines neuen Fahrers:
-  /// 1. Prüft, ob das Limit von 4 Profilen erreicht ist.
-  /// 2. Öffnet den [AddDriverDialog] zur Eingabe der Fahrerdaten (Vorname, Name, Geburtsdatum).
-  /// 3. Öffnet direkt danach den [AddVehicleDialog] zur Eingabe des Pflicht-Fahrzeugs.
-  /// 4. Speichert beide Entitäten in den Repositories und aktualisiert die Ansicht.
+  /// Beschreibung: Führt die zweistufige Registrierung eines neuen Fahrers samt Pflicht-Fahrzeug durch.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _onAddDriverPressed() async {
     if (_drivers.length >= DriverRepository.maxProfiles) {
       _showSnack(
@@ -70,7 +63,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       return;
     }
 
-    // Schritt 1: Fahrer-Erstellung
     final Driver? newDriver = await showDialog<Driver>(
       context: context,
       builder: (context) => const AddDriverDialog(),
@@ -78,7 +70,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if (newDriver == null) return;
 
-    // Schritt 2: Pflicht-Fahrzeug-Erstellung für den neuen Fahrer
     if (!mounted) return;
     final Vehicle? newVehicle = await showDialog<Vehicle>(
       context: context,
@@ -104,8 +95,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  /// Zeigt einen Bestätigungsdialog zum Löschen eines Fahrer-Profils
-  /// und entfernt das Profil bei Bestätigung aus dem [DriverRepository].
+  /// Beschreibung: Löscht ein Fahrer-Profil nach Bestätigung samt allen zugehörigen Fahrzeugen.
+  /// Eingabe: driver ([Driver])
+  /// Ausgabe: `Future<void>`
   Future<void> _onDeleteDriver(Driver driver) async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -134,8 +126,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  /// Überprüft, ob der ausgewählte Fahrer mindestens ein Fahrzeug besitzt,
-  /// und leitet ihn anschließend mit seiner Fahrer-Session zur [MainScreen] weiter.
+  /// Beschreibung: Navigiert mit dem ausgewählten Fahrer zum MainScreen.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _onWeiterPressed() async {
     final driver = _selectedDriver;
     if (driver == null) {
@@ -143,7 +136,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       return;
     }
 
-    // Sicherstellen, dass der gewählte Fahrer mindestens ein Fahrzeug hat
     final vehicles = await _vehicleRepository.getVehiclesForDriver(driver.id);
     if (vehicles.isEmpty) {
       if (!mounted) return;
@@ -168,7 +160,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  /// Zeigt eine Snackbar-Benachrichtigung mit der angegebenen Nachricht an.
+  /// Beschreibung: Zeigt eine Snackbar-Benachrichtigung an.
+  /// Eingabe: message (String)
+  /// Ausgabe: void
   void _showSnack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context)
@@ -216,7 +210,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                     const SizedBox(height: 28),
 
-                    // Driver selection area component
                     WelcomeDriverSection(
                       loading: _loading,
                       drivers: _drivers,

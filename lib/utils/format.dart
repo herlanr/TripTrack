@@ -1,29 +1,34 @@
-/// UTILITY HELPER FUNCTIONS (Formatierungs-Hilfsfunktionen)
-///
-/// Bietet einheitliche Funktionen zur Formatierung von Datum, Uhrzeit,
-/// Dauer und Kilometerangaben im deutschen Zahlenformat.
+/// Bietet einheitliche Funktionen zur Formatierung von Datum, Uhrzeit, Dauer und Kilometerangaben.
 library;
 
-/// Formatiert Datum und Uhrzeit im deutschen Format "15.09.2026 14:00".
+/// Beschreibung: Formatiert Datum und Uhrzeit im deutschen Format (z. B. "15.09.2026 14:00").
+/// Eingabe: dateTime (DateTime)
+/// Ausgabe: String
 String formatDateTime(DateTime dateTime) {
   String two(int value) => value.toString().padLeft(2, '0');
   return '${two(dateTime.day)}.${two(dateTime.month)}.${dateTime.year} '
       '${two(dateTime.hour)}:${two(dateTime.minute)}';
 }
 
-/// Formatiert das Datum im Format "15.09.2026".
+/// Beschreibung: Formatiert ein Datum im deutschen Format (z. B. "15.09.2026").
+/// Eingabe: dateTime (DateTime)
+/// Ausgabe: String
 String formatDate(DateTime dateTime) {
   String two(int value) => value.toString().padLeft(2, '0');
   return '${two(dateTime.day)}.${two(dateTime.month)}.${dateTime.year}';
 }
 
-/// Formatiert die Uhrzeit im Format "14:00".
+/// Beschreibung: Formatiert die Uhrzeit im 24-Stunden-Format (z. B. "14:00").
+/// Eingabe: dateTime (DateTime)
+/// Ausgabe: String
 String formatTime(DateTime dateTime) {
   String two(int value) => value.toString().padLeft(2, '0');
   return '${two(dateTime.hour)}:${two(dateTime.minute)}';
 }
 
-/// Formatiert eine Zeitdauer im Format "1h 05min" oder "42min" oder "15s".
+/// Beschreibung: Formatiert eine Zeitdauer als lesbaren Text (z. B. "1h 05min" oder "42min").
+/// Eingabe: duration (Duration)
+/// Ausgabe: String
 String formatDuration(Duration duration) {
   if (duration.inMinutes < 1) {
     return '${duration.inSeconds}s';
@@ -35,7 +40,9 @@ String formatDuration(Duration duration) {
   return '${hours}h ${minutes.toString().padLeft(2, '0')}min';
 }
 
-/// Formatiert ein Kilometerschritt-Ergebnis mit Komma als Dezimaltrenner: 24.5 -> "24,5 km".
+/// Beschreibung: Formatiert ein Kilometerschritt-Ergebnis mit Komma als Trenner (z. B. "24,5 km").
+/// Eingabe: km (double)
+/// Ausgabe: String
 String formatKm(double km) {
   final bool isWhole = km == km.truncateToDouble();
   final String value =
@@ -43,6 +50,8 @@ String formatKm(double km) {
   return '$value km';
 }
 
-/// Formatiert einen Tacho-Kilometerstand als Ganzzahl: 254660.0 -> "254660".
+/// Beschreibung: Formatiert einen Tacho-Kilometerstand als Ganzzahl-String (z. B. "254660").
+/// Eingabe: km (double)
+/// Ausgabe: String
 String formatKmValue(double km) =>
     km.truncateToDouble().toStringAsFixed(0);

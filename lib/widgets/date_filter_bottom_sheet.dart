@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../utils/format.dart';
 
-/// Modal Bottom Sheet zur komfortablen Datumsauswahl (Schnellauswahl-Chips & von/bis Datumswähler).
+/// Modal Bottom Sheet zur Datumsauswahl (Schnellauswahl-Chips & von/bis Datumswähler).
 class DateFilterBottomSheet extends StatefulWidget {
   /// Erstellt die DateFilterBottomSheet-Instanz.
   const DateFilterBottomSheet({super.key, this.initialRange});
@@ -11,7 +11,9 @@ class DateFilterBottomSheet extends StatefulWidget {
   /// Der aktuell gesetzte Datumsbereich
   final DateTimeRange? initialRange;
 
-  /// Öffnet das Bottom Sheet zur Datumsauswahl.
+  /// Beschreibung: Öffnet das Bottom Sheet zur Datumsauswahl.
+  /// Eingabe: context (BuildContext), initialRange (DateTimeRange?)
+  /// Ausgabe: `Future<DateTimeRange?>`
   static Future<DateTimeRange?> show(
     BuildContext context, {
     DateTimeRange? initialRange,
@@ -43,6 +45,9 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
     }
   }
 
+  /// Beschreibung: Setzt einen vordefinierten Datumsbereich.
+  /// Eingabe: start (DateTime), end (DateTime)
+  /// Ausgabe: void
   void _applyPreset(DateTime start, DateTime end) {
     setState(() {
       _startDate = DateTime(start.year, start.month, start.day);
@@ -50,6 +55,9 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
     });
   }
 
+  /// Beschreibung: Öffnet den Datumswähler zur Auswahl des Startdatums.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _pickStartDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -81,6 +89,9 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
     }
   }
 
+  /// Beschreibung: Öffnet den Datumswähler zur Auswahl des Enddatums.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _pickEndDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -109,6 +120,9 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
     }
   }
 
+  /// Beschreibung: Schließt das Bottom Sheet und gibt den ausgewählten Datumsbereich zurück.
+  /// Eingabe: Keine
+  /// Ausgabe: void
   void _submit() {
     final start = _startDate;
     final end = _endDate;
@@ -150,7 +164,6 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header
             Row(
               children: [
                 const Icon(
@@ -178,7 +191,6 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
 
             const SizedBox(height: 16),
 
-            // Schnellauswahl Title
             Text(
               'Schnellauswahl',
               style: TextStyle(
@@ -189,7 +201,6 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
             ),
             const SizedBox(height: 8),
 
-            // Schnellauswahl Chips
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -224,7 +235,6 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
 
             const SizedBox(height: 20),
 
-            // Benutzerdefinierter Zeitraum Title
             Text(
               'Benutzerdefinierter Zeitraum',
               style: TextStyle(
@@ -235,10 +245,8 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
             ),
             const SizedBox(height: 8),
 
-            // Von / Bis Selector Cards
             Row(
               children: [
-                // Von
                 Expanded(
                   child: InkWell(
                     onTap: _pickStartDate,
@@ -302,7 +310,6 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
                 ),
                 const SizedBox(width: 12),
 
-                // Bis
                 Expanded(
                   child: InkWell(
                     onTap: _pickEndDate,
@@ -369,7 +376,6 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
 
             const SizedBox(height: 24),
 
-            // Actions
             Row(
               children: [
                 Expanded(

@@ -4,8 +4,9 @@ import '../models/vehicle.dart';
 import '../theme/app_theme.dart';
 import '../utils/format.dart';
 
-/// Card widget displaying the driver's registered vehicles and kilometerstand.
+/// Kartenelement zur Auflistung der registrierten Fahrzeuge eines Fahrers.
 class VehicleListCard extends StatelessWidget {
+  /// Erstellt eine neue VehicleListCard-Instanz.
   const VehicleListCard({
     super.key,
     required this.vehicles,
@@ -15,10 +16,19 @@ class VehicleListCard extends StatelessWidget {
     this.onDeleteVehiclePressed,
   });
 
+  /// Liste der Fahrzeuge
   final List<Vehicle> vehicles;
+
+  /// Lade-Status
   final bool loading;
+
+  /// Callback beim Klick auf Hinzufügen
   final VoidCallback onAddVehiclePressed;
+
+  /// Callback beim Klick auf Bearbeiten
   final ValueChanged<Vehicle>? onEditVehiclePressed;
+
+  /// Callback beim Klick auf Löschen
   final ValueChanged<Vehicle>? onDeleteVehiclePressed;
 
   @override

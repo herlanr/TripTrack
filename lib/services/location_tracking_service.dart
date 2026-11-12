@@ -19,27 +19,33 @@ enum LocationPermissionResult {
   serviceDisabled,
 }
 
-/// Kapselt das Geolocator-Plugin für schnelle GPS-Messergebnisse:
-/// 1. Überprüfung von Standortberechtigungen.
-/// 2. Schnelle Abfrage der GPS-Position mit 2-Sekunden-Timeout.
-/// 3. Live-Streaming von GPS-Koordinaten während einer aktiven Fahrt.
+/// Dienst für die Standortberechtigungsprüfung, GPS-Fix-Abfrage und Live-Tracking.
 class LocationTrackingService {
+  /// Abonnement des Geolocator-Streams
   StreamSubscription<Position>? _subscription;
+
+  /// StreamController für Live-GPS-Updates
   StreamController<LocationPoint>? _controller;
 
   /// Die zuletzt empfangene GPS-Position
   LocationPoint? lastKnownPoint;
 
-  /// Gibt an, ob aktuell ein GPS-Tracking-Stream läuft.
+  /// Beschreibung: Gibt an, ob aktuell ein GPS-Tracking-Stream läuft.
+  /// Eingabe: Keine
+  /// Ausgabe: bool
   bool get isTracking => _subscription != null;
 
-  /// Stream für Live-GPS-Koordinaten während einer aktiven Fahrt.
+  /// Beschreibung: Stream für Live-GPS-Koordinaten während einer aktiven Fahrt.
+  /// Eingabe: Keine
+  /// Ausgabe: `Stream<LocationPoint>`
   Stream<LocationPoint> get liveUpdates {
     final controller = _controller;
     return controller != null ? controller.stream : const Stream.empty();
   }
 
-  /// Prüft den GPS-Status und die Standortberechtigungen des Geräts.
+  /// Beschreibung: Prüft den GPS-Status und die Standortberechtigungen des Geräts.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<LocationPermissionResult>`
   Future<LocationPermissionResult> checkPermissionStatus() async {
     if (!await Geolocator.isLocationServiceEnabled()) {
       return LocationPermissionResult.serviceDisabled;
@@ -60,17 +66,23 @@ class LocationTrackingService {
     return LocationPermissionResult.granted;
   }
 
-  /// Öffnet die App-Einstellungen auf dem Gerät.
+  /// Beschreibung: Öffnet die App-Einstellungen auf dem Gerät.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> openAppSettings() async {
     await Geolocator.openAppSettings();
   }
 
-  /// Öffnet die GPS-Standorteinstellungen auf dem Gerät.
+  /// Beschreibung: Öffnet die GPS-Standorteinstellungen auf dem Gerät.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> openLocationSettings() async {
     await Geolocator.openLocationSettings();
   }
 
-  /// Prüft die Berechtigungen und fordert bei Erfolg eine schnelle GPS-Position an.
+  /// Beschreibung: Prüft die Berechtigungen und fordert bei Erfolg eine schnelle GPS-Position an.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<LocationPoint?>`
   Future<LocationPoint?> requestFixWithPermission() async {
     final status = await checkPermissionStatus();
     if (status != LocationPermissionResult.granted) {
@@ -79,8 +91,9 @@ class LocationTrackingService {
     return getCurrentPosition();
   }
 
-  /// Fragt die aktuelle GPS-Position mit einem 2-Sekunden-Timeout ab,
-  /// um lange Verzögerungen beim Beenden einer Fahrt zu vermeiden.
+  /// Beschreibung: Fragt die aktuelle GPS-Position mit einem 2-Sekunden-Timeout ab.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<LocationPoint?>`
   Future<LocationPoint?> getCurrentPosition() async {
     try {
       final Position position = await Geolocator.getCurrentPosition(
@@ -100,7 +113,9 @@ class LocationTrackingService {
     }
   }
 
-  /// Startet den Live-GPS-Position-Stream.
+  /// Beschreibung: Startet den Live-GPS-Position-Stream.
+  /// Eingabe: Keine
+  /// Ausgabe: `Stream<LocationPoint>`
   Stream<LocationPoint> startTracking() {
     if (isTracking) {
       stop();
@@ -125,7 +140,9 @@ class LocationTrackingService {
     return liveUpdates;
   }
 
-  /// Beendet den GPS-Stream.
+  /// Beschreibung: Beendet den GPS-Stream.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> stop() async {
     await _subscription?.cancel();
     _subscription = null;
@@ -133,7 +150,9 @@ class LocationTrackingService {
     _controller = null;
   }
 
-  /// Gibt Ressourcen frei.
+  /// Beschreibung: Gibt verwendete Ressourcen frei.
+  /// Eingabe: Keine
+  /// Ausgabe: void
   void dispose() {
     _subscription?.cancel();
     _subscription = null;
@@ -141,6 +160,9 @@ class LocationTrackingService {
     _controller = null;
   }
 
+  /// Beschreibung: Konvertiert eine Geolocator-Position in ein LocationPoint-Objekt.
+  /// Eingabe: position (Position?)
+  /// Ausgabe: [LocationPoint]?
   LocationPoint? _toPoint(Position? position) {
     if (position == null) return null;
     return LocationPoint(

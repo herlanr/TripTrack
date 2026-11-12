@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-/// Helper utility for reverse geocoding (converting GPS coordinates to street addresses).
-/// Works cross-platform (Android, iOS, Web/Chrome) using OpenStreetMap Nominatim API
+/// Hilfsklasse für Reverse Geocoding (Umwandlung von GPS-Koordinaten in Straßenadressen via OpenStreetMap Nominatim API).
 class GeocodingHelper {
-  /// Converts latitude and longitude into a human-readable street address or city name.
-  /// Example: (50.980454, 11.311514) -> "Nordhäuser Straße, Erfurt"
-  /// Falls back to formatted "lat, lon" string if offline or if resolution fails.
+  /// Beschreibung: Konvertiert Breitengrad und Längengrad in eine lesbare Straßenadresse oder Ortsbezeichnung.
+  /// Eingabe: lat (double), lon (double)
+  /// Ausgabe: `Future<String>`
   static Future<String> getAddressFromCoordinates(double lat, double lon) async {
     try {
       final url = Uri.parse(
@@ -45,10 +44,10 @@ class GeocodingHelper {
         }
       }
     } catch (_) {
-      // Fallback on timeout or network error
+      // Fallback bei Timeout oder Netzwerkfehler
     }
 
-    // Fallback: Formatted Coordinate String
+    // Fallback: Formatierter Koordinaten-String
     return '${lat.toStringAsFixed(4)}, ${lon.toStringAsFixed(4)}';
   }
 }

@@ -38,7 +38,9 @@ class _EditDriverDialogState extends State<EditDriverDialog> {
     super.dispose();
   }
 
-  /// Öffnet den Datumswähler (DatePicker) zur Auswahl des Geburtsdatums.
+  /// Beschreibung: Öffnet den Datumswähler zur Auswahl des Geburtsdatums.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _pickDateOfBirth() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -65,7 +67,9 @@ class _EditDriverDialogState extends State<EditDriverDialog> {
     }
   }
 
-  /// Validiert die Eingaben und gibt die aktualisierte [Driver]-Instanz zurück.
+  /// Beschreibung: Validiert die Eingaben und schließt den Dialog mit den aktualisierten Driver-Daten.
+  /// Eingabe: Keine
+  /// Ausgabe: void
   void _submit() {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();

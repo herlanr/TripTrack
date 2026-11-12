@@ -21,14 +21,6 @@ enum TripSortOption {
 }
 
 /// Die Fahrtenbuch-Übersichtsseite ("Fahrtbuch") der Anwendung.
-///
-/// Bietet folgende Kernfunktionen:
-/// - Anzeige aller gespeicherten Fahrtenbuch-Einträge.
-/// - Suchleiste zum Filtern nach Orten oder Fahrern.
-/// - Dedizierter Datumsfilter-Button (Kalender-Pop-Up für Start- und Enddatum).
-/// - Dedizierter Sortierungs-Button (Neueste zuerst, Älteste zuerst, Längste Strecke).
-/// - Anstoß des CSV-/PDF-Exports über die Teilen-Schaltfläche in der AppBar.
-/// - Detailansicht und Löschen von Einträgen per Klick auf eine Fahrt-Karte.
 class FahrtbuchScreen extends StatefulWidget {
   /// Erstellt eine neue FahrtbuchScreen-Instanz.
   const FahrtbuchScreen({
@@ -63,11 +55,13 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     super.dispose();
   }
 
-  /// Verarbeitet die Fahrtenliste: Filtert nach Fahrer, Suchtext & Datumsbereich und wendet die Sortierung an.
+  /// Beschreibung: Filtert und sortiert die Fahrtenliste nach Fahrer, Suchtext und Datumsbereich.
+  /// Eingabe: Keine
+  /// Ausgabe: `List<Trip>`
   List<Trip> get _processedTrips {
     List<Trip> result = List.of(widget.savedTrips);
 
-    // 0. Fahrer-Filter (Nur Fahrten des aktuell angemeldeten Fahrers anzeigen)
+    // 0. Fahrer-Filter
     final driver = widget.driver;
     if (driver != null) {
       result = result.where((t) {
@@ -82,10 +76,10 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
       result = result.where((t) {
         final start = (t.startLocationText ?? '').toLowerCase();
         final end = (t.endLocationText ?? '').toLowerCase();
-        final driver = t.driverName.toLowerCase();
+        final driverName = t.driverName.toLowerCase();
         return start.contains(query) ||
             end.contains(query) ||
-            driver.contains(query);
+            driverName.contains(query);
       }).toList();
     }
 
@@ -128,7 +122,9 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     return result;
   }
 
-  /// Öffnet das [DateFilterBottomSheet] zur Auswahl von Schnellauswahls oder Start-/Enddatum.
+  /// Beschreibung: Öffnet das DateFilterBottomSheet zur Auswahl des Start- und Enddatums.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _pickDateRange() async {
     final DateTimeRange? picked = await DateFilterBottomSheet.show(
       context,
@@ -142,7 +138,9 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     }
   }
 
-  /// Öffnet den Modal Bottom Sheet zur Auswahl der Sortierungsoption.
+  /// Beschreibung: Öffnet ein Modal Bottom Sheet zur Auswahl der Sortierungsoption.
+  /// Eingabe: Keine
+  /// Ausgabe: `Future<void>`
   Future<void> _showSortOptions() async {
     final selected = await showModalBottomSheet<TripSortOption>(
       context: context,
@@ -208,7 +206,9 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     }
   }
 
-  /// Öffnet den Export-Pop-Up-Dialog.
+  /// Beschreibung: Öffnet den Export-Dialog für Fahrtenbuch-Daten.
+  /// Eingabe: Keine
+  /// Ausgabe: void
   void _openExportDialog() {
     ExportDialog.show(
       context,
@@ -217,6 +217,9 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
     );
   }
 
+  /// Beschreibung: Gibt die lesbare Beschriftung für die gewählte Sortierungsoption zurück.
+  /// Eingabe: option (TripSortOption)
+  /// Ausgabe: String
   String _getSortLabel(TripSortOption option) {
     switch (option) {
       case TripSortOption.newestFirst:
@@ -260,7 +263,6 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Column(
             children: [
-              // Suchleiste + 2 separate Steuerungs-Knöpfe
               Row(
                 children: [
                   Expanded(
@@ -292,7 +294,6 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
                   ),
                   const SizedBox(width: 8),
 
-                  // 1. Datumsfilter-Button
                   Container(
                     decoration: BoxDecoration(
                       color: _selectedDateRange != null
@@ -319,7 +320,6 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
                   ),
                   const SizedBox(width: 8),
 
-                  // 2. Sortierungs-Button
                   Container(
                     decoration: BoxDecoration(
                       color: _sortOption != TripSortOption.newestFirst
@@ -349,7 +349,6 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
                 ],
               ),
 
-              // Aktive Filter Chips anzeigen
               if (hasActiveFilter) ...[
                 const SizedBox(height: 10),
                 Row(
@@ -413,7 +412,6 @@ class _FahrtbuchScreenState extends State<FahrtbuchScreen> {
 
               const SizedBox(height: 16),
 
-              // Fahrtenliste
               Expanded(
                 child: trips.isEmpty
                     ? Center(
